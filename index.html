@@ -1,2259 +1,1006 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>React Native 72h Roadmap</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
-      rel="stylesheet"
-    />
-    <style>
-      /* ── Reset & tokens ─────────────────────────────────────────── */
-      *,
-      *::before,
-      *::after {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
-      :root {
-        --bg: #0e1117;
-        --bg2: #161b25;
-        --bg3: #1d2433;
-        --bg4: #242b3d;
-        --border: #2a3347;
-        --border2: #354160;
-        --text: #e2e8f5;
-        --text2: #8a96b0;
-        --text3: #5c697f;
-        --accent: #6b7aff;
-        --accent2: #8b98ff;
-        --accent-bg: #6b7aff18;
-        --success: #3dd68c;
-        --success-bg: #3dd68c15;
-        --warn: #f5a623;
-        --warn-bg: #f5a62314;
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Daybreak — React Native in 30 days</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+@property --fill { syntax: "<percentage>"; inherits: false; initial-value: 0%; }
 
-        --ph0: #6b7aff;
-        --ph0b: #6b7aff18;
-        --ph1: #3dd68c;
-        --ph1b: #3dd68c18;
-        --ph2: #f5a623;
-        --ph2b: #f5a62318;
-        --ph3: #ff6b9d;
-        --ph3b: #ff6b9d18;
-        --ph4: #38bdf8;
-        --ph4b: #38bdf818;
-        --ph5: #a78bfa;
-        --ph5b: #a78bfa18;
-        --ph6: #fb923c;
-        --ph6b: #fb923c18;
-        --ph7: #34d399;
-        --ph7b: #34d39918;
+:root {
+  --night: #0d0a1f;
+  --dusk: #151030;
+  --dusk-2: #1e1741;
+  --line: #322870;
+  --moon: #f2edff;
+  --haze: #a79fd4;
+  --violet: #7d5bd6;
+  --ember-1: #4a2c8f;
+  --ember-2: #b23a8e;
+  --ember-3: #f26b4f;
+  --gold: #ffc24b;
+  --cell: #1f1942;
+  --ink-on-gold: #261600;
+  --glow: 0.14;
+  --display: "Bricolage Grotesque", "Arial Black", system-ui, sans-serif;
+  --body: "Figtree", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
 
-        --sidebar: 260px;
-        --font: "Inter", sans-serif;
-        --mono: "JetBrains Mono", monospace;
-        --radius: 8px;
-        --radius-sm: 5px;
-      }
-      html,
-      body {
-        height: 100%;
-        overflow: hidden;
-      }
-      body {
-        font-family: var(--font);
-        background: var(--bg);
-        color: var(--text);
-        font-size: 13px;
-        line-height: 1.5;
-      }
-      a {
-        color: var(--accent2);
-        text-decoration: none;
-      }
-      a:hover {
-        text-decoration: underline;
-      }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--night);
+  color: var(--moon);
+  font-family: var(--body);
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(60% 45% at 72% 0%, rgb(255 194 75 / var(--glow)), transparent 70%),
+    radial-gradient(50% 40% at 18% 0%, rgb(178 58 142 / calc(var(--glow) * 0.8)), transparent 70%);
+  transition: background 0.6s ease;
+}
+a { color: inherit; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; border-radius: 6px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
-      /* ── Layout ─────────────────────────────────────────────────── */
-      #app {
-        display: flex;
-        height: 100vh;
-      }
+/* ---------- Layout ---------- */
+.app { position: relative; display: grid; grid-template-columns: 348px minmax(0, 1fr); min-height: 100vh; }
 
-      /* ── Sidebar ─────────────────────────────────────────────────── */
-      #sidebar {
-        width: var(--sidebar);
-        min-width: var(--sidebar);
-        background: var(--bg2);
-        border-right: 1px solid var(--border);
-        display: flex;
-        flex-direction: column;
-        overflow: hidden;
-      }
-      .sb-head {
-        padding: 18px 16px 14px;
-        border-bottom: 1px solid var(--border);
-      }
-      .sb-head h1 {
-        font-size: 13px;
-        font-weight: 600;
-        color: var(--text);
-        letter-spacing: -0.01em;
-        display: flex;
-        align-items: center;
-        gap: 7px;
-      }
-      .sb-head h1 span {
-        font-size: 16px;
-      }
-      .sb-head p {
-        font-size: 11px;
-        color: var(--text3);
-        margin-top: 3px;
-      }
-      .overall-prog {
-        padding: 12px 16px;
-        border-bottom: 1px solid var(--border);
-      }
-      .op-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 7px;
-      }
-      .op-label {
-        font-size: 10px;
-        color: var(--text3);
-        font-family: var(--mono);
-      }
-      .op-pct {
-        font-size: 11px;
-        font-weight: 500;
-        color: var(--accent2);
-        font-family: var(--mono);
-      }
-      .op-bar {
-        height: 4px;
-        background: var(--bg4);
-        border-radius: 2px;
-        overflow: hidden;
-        display: flex;
-        gap: 1px;
-      }
-      .op-seg {
-        height: 100%;
-        border-radius: 1px;
-        transition: width 0.4s ease;
-      }
-      .phase-list {
-        flex: 1;
-        overflow-y: auto;
-        padding: 8px 0;
-      }
-      .phase-list::-webkit-scrollbar {
-        width: 4px;
-      }
-      .phase-list::-webkit-scrollbar-track {
-        background: transparent;
-      }
-      .phase-list::-webkit-scrollbar-thumb {
-        background: var(--border2);
-        border-radius: 2px;
-      }
-      .ph-item {
-        padding: 8px 16px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        gap: 9px;
-        transition: background 0.12s;
-        border-left: 2px solid transparent;
-      }
-      .ph-item:hover {
-        background: var(--bg3);
-      }
-      .ph-item.active {
-        background: var(--bg3);
-      }
-      .ph-dot {
-        width: 7px;
-        height: 7px;
-        border-radius: 50%;
-        flex-shrink: 0;
-      }
-      .ph-info {
-        flex: 1;
-        min-width: 0;
-      }
-      .ph-name {
-        font-size: 12px;
-        font-weight: 500;
-        color: var(--text2);
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-      .ph-item.active .ph-name {
-        color: var(--text);
-      }
-      .ph-prog {
-        font-size: 10px;
-        font-family: var(--mono);
-        color: var(--text3);
-        margin-top: 1px;
-      }
-      .ph-mini-bar {
-        width: 100%;
-        height: 2px;
-        background: var(--bg4);
-        border-radius: 1px;
-        margin-top: 4px;
-        overflow: hidden;
-      }
-      .ph-mini-fill {
-        height: 100%;
-        border-radius: 1px;
-        transition: width 0.3s;
-      }
-      .sb-foot {
-        padding: 12px 16px;
-        border-top: 1px solid var(--border);
-        font-size: 10px;
-        color: var(--text3);
-        font-family: var(--mono);
-      }
+.sidebar {
+  position: sticky; top: 0; height: 100vh; overflow-y: auto;
+  background: rgb(21 16 48 / 0.82);
+  backdrop-filter: blur(10px);
+  border-right: 1px solid var(--line);
+  padding: 24px 20px 32px;
+  scrollbar-width: thin; scrollbar-color: var(--line) transparent;
+}
+.main { min-width: 0; padding: 36px clamp(16px, 4vw, 56px) 96px; }
+.main-inner { max-width: 820px; margin: 0 auto; }
 
-      /* ── Main panel ──────────────────────────────────────────────── */
-      #main {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        overflow: hidden;
-      }
+/* ---------- Sidebar ---------- */
+.brand { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.brand svg { flex: none; }
+.brand-name { font-family: var(--display); font-weight: 800; font-size: 1.45rem; letter-spacing: -0.03em; line-height: 1; }
+.brand-sub { font-family: var(--mono); font-size: 0.72rem; color: var(--haze); margin-top: 4px; }
+.drawer-close { display: none; margin-left: auto; background: none; border: 1px solid var(--line); border-radius: 8px; width: 34px; height: 34px; cursor: pointer; }
 
-      /* ── Top bar ─────────────────────────────────────────────────── */
-      #topbar {
-        padding: 14px 24px;
-        border-bottom: 1px solid var(--border);
-        display: flex;
-        align-items: flex-start;
-        justify-content: space-between;
-        gap: 16px;
-        background: var(--bg2);
-        flex-shrink: 0;
-      }
-      .tb-left h2 {
-        font-size: 15px;
-        font-weight: 600;
-        color: var(--text);
-        letter-spacing: -0.01em;
-      }
-      .tb-left p {
-        font-size: 12px;
-        color: var(--text2);
-        margin-top: 2px;
-      }
-      .tb-right {
-        display: flex;
-        gap: 6px;
-        align-items: center;
-        flex-shrink: 0;
-      }
-      .tb-stat {
-        font-size: 11px;
-        font-family: var(--mono);
-        background: var(--bg3);
-        border: 1px solid var(--border);
-        border-radius: var(--radius-sm);
-        padding: 4px 9px;
-        color: var(--text2);
-        white-space: nowrap;
-      }
-      .tb-stat strong {
-        color: var(--text);
-        font-weight: 500;
-      }
+.overview { display: grid; grid-template-columns: auto 1fr; gap: 20px; align-items: start; margin-bottom: 16px; }
+.plan-grid { display: grid; grid-auto-flow: column; grid-template-rows: repeat(7, 24px); grid-auto-columns: 24px; gap: 4px; }
+.pcell {
+  display: grid; place-items: center; width: 24px; height: 24px; border-radius: 5px;
+  background: var(--cell); font-family: var(--mono); font-size: 0.62rem; color: var(--haze);
+  text-decoration: none; transition: transform 0.12s ease;
+}
+.pcell:hover { transform: scale(1.12); }
+.pcell.l1 { background: var(--ember-1); color: #e5dcff; }
+.pcell.l2 { background: var(--ember-3); color: var(--ink-on-gold); }
+.pcell.l3 { background: var(--gold); color: var(--ink-on-gold); font-weight: 500; }
+.pcell.pad { visibility: hidden; }
+.pcell.next { outline: 2px dashed var(--gold); outline-offset: 1px; }
+.pcell.here { box-shadow: 0 0 0 2px var(--night), 0 0 0 4px var(--moon); }
 
-      /* ── Sessions area ───────────────────────────────────────────── */
-      #sessions-wrap {
-        flex: 1;
-        overflow-y: auto;
-        padding: 16px 24px 40px;
-      }
-      #sessions-wrap::-webkit-scrollbar {
-        width: 5px;
-      }
-      #sessions-wrap::-webkit-scrollbar-track {
-        background: transparent;
-      }
-      #sessions-wrap::-webkit-scrollbar-thumb {
-        background: var(--border);
-        border-radius: 3px;
-      }
+.stat-col { display: grid; gap: 8px; }
+.stat { line-height: 1.1; }
+.stat b { display: block; font-family: var(--display); font-weight: 700; font-size: 1.55rem; letter-spacing: -0.02em; }
+.stat > span { font-family: var(--mono); font-size: 0.64rem; color: var(--haze); text-transform: uppercase; letter-spacing: 0.08em; }
 
-      .sess-card {
-        background: var(--bg2);
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        margin-bottom: 8px;
-        overflow: hidden;
-        transition: border-color 0.15s;
-      }
-      .sess-card:hover {
-        border-color: var(--border2);
-      }
-      .sess-card.open {
-        border-color: var(--border2);
-      }
-      .sess-card.done {
-        border-left: 2px solid var(--success);
-      }
+.legend { display: flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 0.64rem; color: var(--haze); margin-bottom: 18px; flex-wrap: wrap; }
+.legend i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
 
-      .sess-hdr {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 11px 14px;
-        cursor: pointer;
-        user-select: none;
-      }
-      .sess-num {
-        font-family: var(--mono);
-        font-size: 11px;
-        font-weight: 500;
-        width: 26px;
-        height: 26px;
-        border-radius: 6px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-        color: #fff;
-      }
-      .sess-meta {
-        flex: 1;
-        min-width: 0;
-      }
-      .sess-meta h3 {
-        font-size: 13px;
-        font-weight: 500;
-        color: var(--text);
-      }
-      .sess-card.done .sess-meta h3 {
-        color: var(--text2);
-      }
-      .sess-meta p {
-        font-size: 11px;
-        color: var(--text3);
-        margin-top: 1px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-      .sess-badges {
-        display: flex;
-        gap: 5px;
-        align-items: center;
-        flex-shrink: 0;
-      }
-      .badge {
-        font-size: 10px;
-        font-family: var(--mono);
-        padding: 2px 7px;
-        border-radius: 4px;
-        font-weight: 400;
-        white-space: nowrap;
-      }
-      .b-mobile {
-        background: #6b7aff18;
-        color: #8b98ff;
-        border: 1px solid #6b7aff30;
-      }
-      .b-map {
-        background: #ff6b9d18;
-        color: #ff6b9d;
-        border: 1px solid #ff6b9d30;
-      }
-      .b-build {
-        background: #fb923c18;
-        color: #fb923c;
-        border: 1px solid #fb923c30;
-      }
-      .b-done {
-        background: var(--success-bg);
-        color: var(--success);
-        border: 1px solid #3dd68c30;
-      }
-      .chevron {
-        color: var(--text3);
-        font-size: 13px;
-        transition: transform 0.2s;
-        flex-shrink: 0;
-      }
-      .sess-card.open .chevron {
-        transform: rotate(180deg);
-      }
+.cta {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%;
+  padding: 12px 16px; border-radius: 12px; border: 0; cursor: pointer; text-decoration: none;
+  background: var(--gold); color: var(--ink-on-gold); font-weight: 700; font-size: 0.95rem; margin-bottom: 22px;
+}
+.cta:hover { filter: brightness(1.06); }
+.cta[aria-disabled="true"] { background: var(--dusk-2); color: var(--haze); cursor: default; filter: none; }
+.cta small { font-weight: 500; opacity: 0.75; display: block; font-size: 0.78rem; }
 
-      .sess-body {
-        display: none;
-        border-top: 1px solid var(--border);
-        padding: 16px;
-      }
-      .sess-card.open .sess-body {
-        display: block;
-      }
+.wk { display: flex; align-items: baseline; gap: 8px; margin: 20px 0 6px; padding: 0 4px; }
+.wk strong { font-family: var(--display); font-weight: 700; font-size: 1rem; }
+.wk em { font-style: normal; font-size: 0.78rem; color: var(--haze); flex: 1; }
+.wk span { font-family: var(--mono); font-size: 0.72rem; color: var(--haze); }
+.row {
+  display: grid; grid-template-columns: 26px 24px 1fr; align-items: center; gap: 8px;
+  padding: 7px 8px; border-radius: 9px; text-decoration: none; font-size: 0.88rem; color: var(--moon);
+  border: 1px solid transparent;
+}
+.row:hover { background: var(--dusk-2); }
+.row.active { background: var(--dusk-2); border-color: var(--line); box-shadow: inset 3px 0 0 var(--gold); }
+.row.complete .row-t { color: var(--haze); }
+.row-n { font-family: var(--mono); font-size: 0.72rem; color: var(--haze); text-align: right; }
+.row-t { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pips { display: grid; grid-template-columns: repeat(3, 5px); gap: 2px; }
+.pips i { width: 5px; height: 14px; border-radius: 2px; background: var(--cell); display: block; }
+.pips i.on { background: var(--gold); }
 
-      .body-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 14px;
-      }
-      @media (max-width: 900px) {
-        .body-grid {
-          grid-template-columns: 1fr;
-        }
-      }
+.side-foot { margin-top: 26px; padding-top: 16px; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: 8px; }
+.ghost {
+  background: none; border: 1px solid var(--line); color: var(--haze); border-radius: 8px;
+  padding: 6px 11px; font-family: var(--mono); font-size: 0.72rem; cursor: pointer;
+}
+.ghost:hover { color: var(--moon); border-color: var(--haze); }
+.ghost.danger:hover { color: #ff8a7a; border-color: #ff8a7a; }
+.warn { font-size: 0.78rem; color: var(--ember-3); margin: 10px 0 0; }
 
-      .body-col {
-      }
-      .sec-label {
-        font-size: 10px;
-        font-family: var(--mono);
-        color: var(--text3);
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        margin-bottom: 8px;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-      }
-      .sec-label::after {
-        content: "";
-        flex: 1;
-        height: 1px;
-        background: var(--border);
-      }
+/* ---------- Mobile top bar ---------- */
+.topbar { display: none; }
+.scrim { display: none; }
 
-      .tags {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 4px;
-        margin-bottom: 4px;
-      }
-      .tag {
-        font-size: 10px;
-        font-family: var(--mono);
-        background: var(--bg3);
-        color: var(--text2);
-        padding: 2px 7px;
-        border-radius: 4px;
-        border: 1px solid var(--border);
-      }
+/* ---------- Day header ---------- */
+.crumbs { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; font-family: var(--mono); font-size: 0.76rem; color: var(--haze); margin-bottom: 18px; }
+.crumbs .sp { flex: 1; }
+.navbtn {
+  display: inline-grid; place-items: center; width: 36px; height: 36px; border-radius: 10px;
+  background: var(--dusk); border: 1px solid var(--line); color: var(--moon); text-decoration: none; cursor: pointer;
+}
+.navbtn:hover { border-color: var(--gold); }
+.navbtn[aria-disabled="true"] { opacity: 0.35; pointer-events: none; }
 
-      .bridge {
-        background: var(--bg3);
-        border-left: 2px solid var(--warn);
-        border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-        padding: 9px 11px;
-        font-size: 12px;
-        color: var(--text2);
-        line-height: 1.6;
-      }
-      .bridge strong {
-        color: var(--text);
-        font-weight: 500;
-      }
+.hero { display: grid; grid-template-columns: auto 1fr; gap: clamp(16px, 3vw, 36px); align-items: end; margin-bottom: 8px; }
+.numeral {
+  font-family: var(--display); font-weight: 800; font-size: clamp(5.5rem, 13vw, 9.5rem);
+  line-height: 0.82; letter-spacing: -0.045em; padding-bottom: 0.04em; min-width: 1.75ch; text-align: left;
+  color: transparent; -webkit-text-stroke: 2px var(--haze);
+  background: linear-gradient(to top, var(--ember-3), var(--gold) var(--fill), transparent var(--fill));
+  -webkit-background-clip: text; background-clip: text;
+  transition: --fill 0.6s ease;
+  user-select: none;
+}
+.numeral.full { -webkit-text-stroke-color: var(--gold); }
+.numeral.pop { animation: pop 0.7s ease; }
+@keyframes pop { 0% { transform: scale(1); } 35% { transform: scale(1.06); } 100% { transform: scale(1); } }
+.hero h1 { font-family: var(--display); font-weight: 700; font-size: clamp(1.6rem, 4vw, 2.5rem); line-height: 1.05; letter-spacing: -0.03em; margin: 0 0 10px; text-wrap: balance; }
+.hero p { margin: 0; font-family: var(--mono); font-size: 0.78rem; color: var(--haze); }
+.segbar { display: grid; grid-template-columns: 45fr 60fr 15fr; gap: 4px; margin: 22px 0 6px; }
+.segbar i { height: 6px; border-radius: 3px; background: var(--cell); display: block; transition: background 0.3s; }
+.segbar i.on { background: var(--gold); }
 
-      .res-list {
-        display: flex;
-        flex-direction: column;
-        gap: 7px;
-      }
-      .res-item {
-        display: flex;
-        gap: 9px;
-        align-items: flex-start;
-      }
-      .res-icon {
-        width: 20px;
-        height: 20px;
-        border-radius: 4px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 9px;
-        flex-shrink: 0;
-        margin-top: 1px;
-      }
-      .r-yt {
-        background: #ff000018;
-        color: #ff4444;
-        border: 1px solid #ff000030;
-      }
-      .r-doc {
-        background: #38bdf818;
-        color: #38bdf8;
-        border: 1px solid #38bdf830;
-      }
-      .r-code {
-        background: #3dd68c18;
-        color: #3dd68c;
-        border: 1px solid #3dd68c30;
-      }
-      .res-text a {
-        font-size: 12px;
-        font-weight: 500;
-        color: var(--accent2);
-      }
-      .res-text p {
-        font-size: 11px;
-        color: var(--text3);
-        margin-top: 2px;
-        line-height: 1.4;
-      }
+/* ---------- Sessions ---------- */
+.timeline { display: grid; gap: 14px; margin-top: 26px; }
+.session {
+  position: relative; background: var(--dusk); border: 1px solid var(--line); border-radius: 16px;
+  padding: 18px 20px 20px 24px; transition: border-color 0.2s, background 0.2s;
+}
+.session::before { content: ""; position: absolute; left: 0; top: 16px; bottom: 16px; width: 4px; border-radius: 0 4px 4px 0; background: var(--band); }
+.session.watch { --band: var(--violet); }
+.session.build { --band: var(--ember-3); }
+.session.review { --band: var(--gold); }
+.session.done { border-color: rgb(255 194 75 / 0.45); background: linear-gradient(180deg, rgb(255 194 75 / 0.06), var(--dusk)); }
+.s-head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+.s-kind { font-family: var(--display); font-weight: 700; font-size: 1.25rem; letter-spacing: -0.02em; }
+.s-time { font-family: var(--mono); font-size: 0.72rem; color: var(--haze); border: 1px solid var(--line); border-radius: 99px; padding: 2px 9px; }
+.spacer { flex: 1; }
+.toggle {
+  display: inline-flex; align-items: center; gap: 10px; padding: 7px 14px 7px 8px; border-radius: 99px;
+  border: 1px solid var(--line); background: var(--dusk-2); cursor: pointer; font-weight: 600; font-size: 0.88rem;
+}
+.toggle:hover { border-color: var(--haze); }
+.toggle .box { width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--haze); display: grid; place-items: center; }
+.toggle .box svg { opacity: 0; transform: scale(0.6); transition: 0.15s; }
+.toggle kbd { font-family: var(--mono); font-size: 0.68rem; color: var(--haze); border: 1px solid var(--line); border-radius: 5px; padding: 0 5px; }
+.toggle[aria-pressed="true"] { background: var(--gold); border-color: var(--gold); color: var(--ink-on-gold); }
+.toggle[aria-pressed="true"] .box { background: var(--ink-on-gold); border-color: var(--ink-on-gold); color: var(--gold); }
+.toggle[aria-pressed="true"] .box svg { opacity: 1; transform: none; }
+.toggle[aria-pressed="true"] kbd { color: var(--ink-on-gold); border-color: rgb(38 22 0 / 0.35); }
 
-      .review-box {
-        background: var(--warn-bg);
-        border: 1px solid #f5a62325;
-        border-radius: var(--radius-sm);
-        padding: 10px 12px;
-      }
-      .review-box p {
-        font-size: 12px;
-        color: #f5a623cc;
-        line-height: 1.6;
-      }
+.s-text { margin: 0; font-size: 1.02rem; max-width: 62ch; }
+.stack { display: grid; gap: 10px; }
+.vid {
+  display: grid; grid-template-columns: 176px 1fr; gap: 16px; padding: 10px; border-radius: 12px;
+  background: var(--dusk-2); border: 1px solid var(--line); text-decoration: none; color: inherit;
+}
+.vid:hover { border-color: var(--gold); }
+.thumb { position: relative; aspect-ratio: 16 / 9; border-radius: 8px; overflow: hidden; background: linear-gradient(135deg, var(--ember-1), var(--dusk)); align-self: start; }
+.thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+.thumb.broken img { display: none; }
+.play { position: absolute; inset: 0; display: grid; place-items: center; }
+.play span { width: 38px; height: 38px; border-radius: 50%; background: rgb(13 10 31 / 0.72); display: grid; place-items: center; transition: transform 0.15s, background 0.15s; }
+.vid:hover .play span { transform: scale(1.1); background: var(--gold); color: var(--ink-on-gold); }
+.vid-title { font-weight: 600; line-height: 1.32; margin-bottom: 4px; }
+.vid-meta { font-size: 0.8rem; color: var(--haze); margin-bottom: 6px; }
+.vid-url { font-family: var(--mono); font-size: 0.7rem; color: var(--gold); overflow-wrap: anywhere; }
+.doc {
+  display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 10px; text-decoration: none;
+  border: 1px dashed var(--line); font-size: 0.92rem;
+}
+.doc:hover { border-color: var(--gold); background: var(--dusk-2); }
+.doc svg { flex: none; color: var(--haze); }
+.doc span.dm { margin-left: auto; font-family: var(--mono); font-size: 0.68rem; color: var(--haze); }
+.empty-note { margin: 0; color: var(--haze); font-size: 0.95rem; max-width: 60ch; }
+.qs { margin: 0 0 16px; padding-left: 1.2em; display: grid; gap: 6px; }
+.qs li::marker { color: var(--gold); }
+.note {
+  width: 100%; min-height: 76px; resize: vertical; background: var(--dusk-2); border: 1px solid var(--line);
+  border-radius: 10px; padding: 10px 12px; color: var(--moon); font: inherit; font-size: 0.92rem;
+}
+.note::placeholder { color: var(--haze); opacity: 0.8; }
+.note:focus { outline: 2px solid var(--gold); outline-offset: 1px; }
 
-      .done-row {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin-top: 14px;
-        padding-top: 12px;
-        border-top: 1px solid var(--border);
-      }
-      .done-btn {
-        font-size: 11px;
-        font-family: var(--mono);
-        padding: 5px 12px;
-        border-radius: var(--radius-sm);
-        background: var(--bg3);
-        border: 1px solid var(--border2);
-        cursor: pointer;
-        color: var(--text2);
-        transition: all 0.15s;
-      }
-      .done-btn:hover {
-        background: var(--bg4);
-        color: var(--text);
-      }
-      .done-btn.is-done {
-        background: var(--success-bg);
-        color: var(--success);
-        border-color: #3dd68c40;
-      }
-      .done-note {
-        font-size: 11px;
-        color: var(--text3);
-        font-family: var(--mono);
-      }
+.banner {
+  display: none; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 14px; padding: 16px 20px;
+  border-radius: 16px; background: var(--gold); color: var(--ink-on-gold); font-weight: 700;
+}
+.banner.show { display: flex; }
+.banner .sp { flex: 1; }
+.banner a { background: var(--ink-on-gold); color: var(--gold); text-decoration: none; border-radius: 99px; padding: 8px 16px; font-size: 0.9rem; }
 
-      /* ── Mobile toggle ───────────────────────────────────────────── */
-      #mob-toggle {
-        display: none;
-        position: fixed;
-        top: 12px;
-        left: 12px;
-        z-index: 100;
-        background: var(--bg2);
-        border: 1px solid var(--border);
-        border-radius: var(--radius-sm);
-        padding: 6px 10px;
-        cursor: pointer;
-        color: var(--text2);
-        font-size: 13px;
-      }
-      @media (max-width: 700px) {
-        #mob-toggle {
-          display: flex;
-        }
-        #sidebar {
-          position: fixed;
-          left: -260px;
-          top: 0;
-          bottom: 0;
-          z-index: 50;
-          transition: left 0.2s;
-        }
-        #sidebar.mob-open {
-          left: 0;
-        }
-        #topbar {
-          padding-left: 52px;
-        }
-      }
+.pager { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 22px; }
+.pg {
+  display: grid; gap: 2px; padding: 14px 16px; border-radius: 14px; border: 1px solid var(--line); background: var(--dusk);
+  text-decoration: none;
+}
+.pg:hover { border-color: var(--gold); }
+.pg small { font-family: var(--mono); font-size: 0.7rem; color: var(--haze); }
+.pg b { font-weight: 600; font-size: 0.95rem; }
+.pg.next-pg { text-align: right; }
+.pg[aria-disabled="true"] { visibility: hidden; }
 
-      /* ── Scrollbar ───────────────────────────────────────────────── */
-      ::-webkit-scrollbar {
-        width: 5px;
-        height: 5px;
-      }
-      ::-webkit-scrollbar-track {
-        background: transparent;
-      }
-      ::-webkit-scrollbar-thumb {
-        background: var(--border);
-        border-radius: 3px;
-      }
-    </style>
-  </head>
-  <body>
-    <button id="mob-toggle" onclick="toggleSidebar()">☰</button>
+.hint { margin: 26px 0 0; font-family: var(--mono); font-size: 0.72rem; color: var(--haze); }
+.hint kbd { border: 1px solid var(--line); border-radius: 5px; padding: 0 5px; margin: 0 1px; }
 
-    <div id="app">
-      <!-- Sidebar -->
-      <aside id="sidebar">
-        <div class="sb-head">
-          <h1><span>📱</span> RN Roadmap</h1>
-          <p>72 hours · 36 sessions · iOS &amp; Android</p>
-        </div>
-        <div class="overall-prog">
-          <div class="op-row">
-            <span class="op-label">overall</span>
-            <span class="op-pct" id="op-pct">0 / 36</span>
-          </div>
-          <div class="op-bar" id="op-bar"></div>
-        </div>
-        <nav class="phase-list" id="phase-list"></nav>
-        <div class="sb-foot">localStorage · progress auto-saved</div>
-      </aside>
+/* ---------- Activity heatmap ---------- */
+.activity { margin-top: 44px; padding: 20px 22px 22px; border: 1px solid var(--line); border-radius: 16px; background: var(--dusk); }
+.activity h2 { font-family: var(--display); font-weight: 700; font-size: 1.25rem; letter-spacing: -0.02em; margin: 0 0 4px; }
+.activity > p { margin: 0 0 16px; color: var(--haze); font-size: 0.88rem; }
+.heat-scroll { overflow-x: auto; padding-bottom: 6px; }
+.heat { --hs: 16px; --hg: 4px; display: grid; grid-template-columns: 28px auto; gap: 0 8px; width: max-content; }
+.heat-days { display: grid; grid-template-rows: repeat(7, var(--hs)); gap: var(--hg); font-family: var(--mono); font-size: 0.6rem; color: var(--haze); margin-top: 18px; }
+.heat-days span { line-height: var(--hs); }
+.heat-months { display: grid; grid-auto-flow: column; grid-auto-columns: var(--hs); gap: var(--hg); height: 14px; margin-bottom: 4px; font-family: var(--mono); font-size: 0.6rem; color: var(--haze); }
+.heat-months span { white-space: nowrap; overflow: visible; }
+.heat-cells { display: grid; grid-auto-flow: column; grid-template-rows: repeat(7, var(--hs)); grid-auto-columns: var(--hs); gap: var(--hg); }
+.hc { width: var(--hs, 16px); height: var(--hs, 16px); border-radius: 3px; background: var(--cell); }
+.hc.h1 { background: var(--ember-1); }
+.hc.h2 { background: var(--ember-2); }
+.hc.h3 { background: var(--ember-3); }
+.hc.h4 { background: var(--gold); }
+.hc.fut { background: transparent; border: 1px dashed var(--line); }
+.hc.today { box-shadow: 0 0 0 2px var(--dusk), 0 0 0 3.5px var(--moon); }
+.heat-legend { display: flex; justify-content: flex-end; align-items: center; gap: 4px; margin-top: 10px; font-family: var(--mono); font-size: 0.64rem; color: var(--haze); }
+.heat-legend .hc { width: 11px; height: 11px; }
 
-      <!-- Main -->
-      <main id="main">
-        <div id="topbar">
-          <div class="tb-left">
-            <h2 id="tb-title"></h2>
-            <p id="tb-desc"></p>
-          </div>
-          <div class="tb-right">
-            <div class="tb-stat" id="tb-stat-sess"></div>
-            <div class="tb-stat" id="tb-stat-time"></div>
-          </div>
-        </div>
-        <div id="sessions-wrap" id="sessions-wrap">
-          <div id="sessions-grid"></div>
-        </div>
-      </main>
+/* ---------- Responsive ---------- */
+@media (max-width: 980px) {
+  .app { grid-template-columns: 1fr; }
+  .sidebar {
+    position: fixed; inset: 0 auto 0 0; width: min(372px, 90vw); height: 100%; z-index: 40;
+    transform: translateX(-102%); transition: transform 0.25s ease; background: var(--dusk);
+  }
+  .sidebar.open { transform: none; }
+  .drawer-close { display: grid; place-items: center; }
+  .scrim.show { display: block; position: fixed; inset: 0; z-index: 30; background: rgb(5 3 14 / 0.65); }
+  .topbar {
+    display: flex; align-items: center; gap: 10px; position: sticky; top: 0; z-index: 20; padding: 10px 12px;
+    background: rgb(13 10 31 / 0.92); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line);
+  }
+  .menu-btn { flex: none; display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 10px; background: var(--dusk-2); border: 1px solid var(--line); cursor: pointer; font-weight: 600; font-size: 0.85rem; }
+  .chips { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; flex: 1; padding: 2px; }
+  .chips::-webkit-scrollbar { display: none; }
+  .chip {
+    flex: none; width: 34px; height: 34px; display: grid; place-items: center; border-radius: 50%;
+    background: var(--cell); font-family: var(--mono); font-size: 0.74rem; text-decoration: none; color: var(--haze);
+  }
+  .chip.l1 { background: var(--ember-1); color: #e5dcff; }
+  .chip.l2 { background: var(--ember-3); color: var(--ink-on-gold); }
+  .chip.l3 { background: var(--gold); color: var(--ink-on-gold); }
+  .chip.here { box-shadow: 0 0 0 2px var(--night), 0 0 0 4px var(--moon); }
+  .main { padding-top: 22px; }
+  .hint { display: none; }
+}
+@media (max-width: 560px) {
+  .hero { grid-template-columns: 1fr; gap: 6px; }
+  .numeral { min-width: 0; font-size: 6rem; }
+  .vid-url .host { display: none; }
+  .vid { grid-template-columns: 124px 1fr; gap: 12px; }
+  .play span { width: 30px; height: 30px; }
+  .session { padding: 16px 14px 16px 18px; }
+  .pager { grid-template-columns: 1fr; }
+  .toggle kbd { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <aside class="sidebar" id="sidebar" aria-label="Course navigation">
+    <div id="sideInner"></div>
+  </aside>
+  <div class="scrim" id="scrim"></div>
+
+  <div class="main">
+    <div class="topbar" id="topbar"></div>
+    <div class="main-inner">
+      <div id="dayView"></div>
+      <div id="activity"></div>
     </div>
+  </div>
 
-    <script>
-      // ── Data ─────────────────────────────────────────────────────────
-      const PHASES = [
-        {
-          name: "Mobile fundamentals",
-          desc: "Expo, core components, styling, navigation",
-          color: "#6B7AFF",
-          sessions: [0, 1, 2, 3, 4],
-        },
-        {
-          name: "State & data",
-          desc: "Zustand, React Query, forms, offline",
-          color: "#3DD68C",
-          sessions: [5, 6, 7, 8, 9],
-        },
-        {
-          name: "Device APIs",
-          desc: "Camera, image upload, GPS, notifications",
-          color: "#F5A623",
-          sessions: [10, 11, 12, 13, 14],
-        },
-        {
-          name: "Maps integration",
-          desc: "MapLibre, markers, interactions, offline",
-          color: "#FF6B9D",
-          sessions: [15, 16, 17, 18],
-        },
-        {
-          name: "Advanced UI",
-          desc: "Reanimated, gestures, FlashList, theming",
-          color: "#38BDF8",
-          sessions: [19, 20, 21, 22, 23],
-        },
-        {
-          name: "Caching & offline",
-          desc: "MMKV, SQLite, WatermelonDB, background",
-          color: "#A78BFA",
-          sessions: [24, 25, 26, 27],
-        },
-        {
-          name: "iOS & Android builds",
-          desc: "EAS Build, signing, config plugins",
-          color: "#FB923C",
-          sessions: [28, 29, 30, 31],
-        },
-        {
-          name: "Capstone & production",
-          desc: "Testing, OTA updates, performance, ship",
-          color: "#34D399",
-          sessions: [32, 33, 34, 35],
-        },
-      ];
+</div>
 
-      const SESSIONS = [
-        // ── Phase 0
-        {
-          phase: 0,
-          title: "Expo & React Native mental model",
-          sub: "How RN differs from React/Next.js",
-          badge: "b-mobile",
-          bl: "new paradigm",
-          tags: [
-            "Expo SDK",
-            "Metro bundler",
-            "React Native vs Expo",
-            "expo-router",
-            "iOS Simulator",
-            "Android Emulator",
-            "Physical device testing",
-            "Expo Go",
-          ],
-          bridge:
-            "In Next.js you render &lt;div&gt; and &lt;p&gt;. In RN, those become &lt;View&gt; and &lt;Text&gt; — there's no DOM, no CSS files, no browser. Metro bundler works like Vite but compiles to native code. Expo is like Next.js for React Native: it handles the native toolchain so you don't have to touch Xcode or Android Studio yet.",
-          resources: [
-            {
-              t: "yt",
-              label: "React Native in 100 Seconds — Fireship",
-              url: "https://www.youtube.com/watch?v=gvkqT_Uoahw",
-              note: "Best 2-min mental model before anything else",
-            },
-            {
-              t: "yt",
-              label: "Expo Crash Course 2024 — Traversy Media",
-              url: "https://www.youtube.com/watch?v=0-S5a0eXPoc",
-              note: "Full project setup, Expo Go, device testing walkthrough",
-            },
-            {
-              t: "doc",
-              label: "Expo: Introduction & first steps",
-              url: "https://docs.expo.dev/get-started/introduction/",
-              note: "Official Expo docs — start here for environment setup",
-            },
-          ],
-          review:
-            "Create a new Expo app with expo-router. Run it simultaneously on your phone via Expo Go, an iOS simulator, and an Android emulator. Confirm hot reload works on all three. Map out the folder structure in a comment.",
-        },
-        {
-          phase: 0,
-          title: "Core components & layouts",
-          sub: "View, Text, Image, FlatList — the building blocks",
-          badge: "b-mobile",
-          bl: "new concepts",
-          tags: [
-            "View",
-            "Text",
-            "Image",
-            "ScrollView",
-            "FlatList",
-            "SectionList",
-            "SafeAreaView",
-            "KeyboardAvoidingView",
-            "Pressable",
-            "TouchableOpacity",
-          ],
-          bridge:
-            "&lt;div&gt; → &lt;View&gt;, &lt;p&gt; → &lt;Text&gt;, &lt;img&gt; → &lt;Image&gt;, &lt;ul&gt; → &lt;FlatList&gt;. There's no &lt;table&gt;. FlatList is the most critical component — it virtualizes long lists natively. Unlike react-window on web, it's built-in and required for any list over 50 items.",
-          resources: [
-            {
-              t: "yt",
-              label: "React Native Core Components — William Candillon",
-              url: "https://www.youtube.com/watch?v=06TE_U21FK4",
-              note: "Visual walkthrough of all core components with live props demo",
-            },
-            {
-              t: "doc",
-              label: "RN: Core Components API",
-              url: "https://reactnative.dev/docs/components-and-apis",
-              note: "Bookmark this — your permanent reference for component props",
-            },
-          ],
-          review:
-            "Build a FlatList rendering 50 music items (title + artist). Each item must be pressable with a visual active state. Add a SectionList grouping music by genre. Verify smooth scrolling on a physical device.",
-        },
-        {
-          phase: 0,
-          title: "Styling in React Native",
-          sub: "StyleSheet, Flexbox column-first, Dimensions",
-          badge: "b-mobile",
-          bl: "paradigm shift",
-          tags: [
-            "StyleSheet.create()",
-            "Flexbox (column-first)",
-            "Dimensions API",
-            "useWindowDimensions",
-            "Platform.OS",
-            "Platform.select()",
-            "dp vs px",
-            "NativeWind intro",
-          ],
-          bridge:
-            "No CSS files at all. StyleSheet.create() is like CSS-in-JS but only a subset of CSS properties are supported. Flexbox works the same as web — but the <strong>default flex direction is column</strong>, not row. All sizes are in density-independent pixels (dp), not screen pixels. Platform.select() lets you write platform-specific values inline.",
-          resources: [
-            {
-              t: "yt",
-              label: "React Native Styling Deep Dive — Simon Grimm",
-              url: "https://www.youtube.com/watch?v=Ef_T0bjW0WA",
-              note: "The single best video on RN styling — covers all edge cases and gotchas",
-            },
-            {
-              t: "doc",
-              label: "RN: Style reference",
-              url: "https://reactnative.dev/docs/style",
-              note: "Complete list of supported style properties",
-            },
-          ],
-          review:
-            "Build a responsive card layout: full-width on mobile, 2-column on tablet using useWindowDimensions. Use Platform.select() to add different safe area padding on iOS vs Android. Test on both platforms.",
-        },
-        {
-          phase: 0,
-          title: "Navigation with expo-router",
-          sub: "File-based routing — Next.js App Router for mobile",
-          badge: "b-mobile",
-          bl: "familiar pattern",
-          tags: [
-            "expo-router",
-            "File-based routing",
-            "Stack navigator",
-            "Tab navigator",
-            "Drawer navigator",
-            "useRouter",
-            "useLocalSearchParams",
-            "Protected routes",
-            "Deep links",
-            "_layout.tsx",
-          ],
-          bridge:
-            "expo-router is almost identical to Next.js App Router: /app/index.tsx = home, /app/(tabs)/profile.tsx = tab route, useRouter() = Next.js useRouter(). Stack navigation is like browser history. Tab navigation is the bottom tab bar. The main mental shift: navigating between screens, not pages — and you manage the navigation stack, not the browser.",
-          resources: [
-            {
-              t: "yt",
-              label: "expo-router Full Tutorial — Simon Grimm",
-              url: "https://www.youtube.com/watch?v=rIYzLhkG9TA",
-              note: "Most thorough expo-router walkthrough — tabs, stacks, protected routes",
-            },
-            {
-              t: "yt",
-              label: "Expo Router v3 Crash Course — Traversy Media",
-              url: "https://www.youtube.com/watch?v=vkw-MFPD6BE",
-              note: "Quick practical overview combining tabs + stack",
-            },
-            {
-              t: "doc",
-              label: "Expo Router docs",
-              url: "https://docs.expo.dev/router/introduction/",
-              note: "File-based routing, layouts, deep linking reference",
-            },
-          ],
-          review:
-            "Build a 3-tab app: Home (FlatList), Map (placeholder), Profile. Add a stack on Home navigating to a Detail screen that receives a music ID param. Add a protected route that redirects to /login if no token in SecureStore.",
-        },
-        {
-          phase: 0,
-          title: "Hooks & TypeScript patterns in RN",
-          sub: "Mobile-specific hooks on top of what you know",
-          badge: "b-mobile",
-          bl: "extends your knowledge",
-          tags: [
-            "useColorScheme",
-            "useWindowDimensions",
-            "AppState API",
-            "Keyboard API",
-            "BackHandler (Android)",
-            "TypeScript generics in RN",
-            "NativeStackNavigatorParamList",
-            "ComponentProps",
-            "ReturnType",
-          ],
-          bridge:
-            "All your React hooks (useState, useEffect, useCallback, useMemo, useRef, useContext) work identically. RN adds mobile-specific hooks: useColorScheme() for dark/light mode, AppState for detecting foreground/background transitions — critical for apps that need to sync data when the user returns to the app.",
-          resources: [
-            {
-              t: "yt",
-              label: "React Native with TypeScript — Academind",
-              url: "https://www.youtube.com/watch?v=iHR9tOqkMpU",
-              note: "TypeScript setup and patterns specific to React Native",
-            },
-            {
-              t: "doc",
-              label: "Expo: TypeScript guide",
-              url: "https://docs.expo.dev/guides/typescript/",
-              note: "Expo-specific TypeScript configuration and path aliases",
-            },
-          ],
-          review:
-            "Add dark/light theme switching using useColorScheme(). Detect foreground/background transitions with AppState and log them. Fully type all navigation params with TypeScript generics. Add Android BackHandler to confirm exit.",
-        },
-        // ── Phase 1
-        {
-          phase: 1,
-          title: "Zustand for mobile state",
-          sub: "Lightweight state with MMKV persistence",
-          badge: "b-mobile",
-          bl: "web pattern adapted",
-          tags: [
-            "zustand",
-            "create()",
-            "persist middleware",
-            "MMKV storage adapter",
-            "Slice pattern",
-            "Immer middleware",
-            "TypeScript store",
-            "devtools",
-          ],
-          bridge:
-            "Zustand works identically to web. The key mobile addition is the <strong>persist middleware with MMKV</strong> — instead of localStorage, you persist state to encrypted device storage. Same API, different adapter: StorageValue, getStorage, setStorage all map 1:1 to how you'd configure zustand-persist on web.",
-          resources: [
-            {
-              t: "yt",
-              label: "Zustand in React Native — Simon Grimm",
-              url: "https://www.youtube.com/watch?v=AYO4km6HNy8",
-              note: "Complete zustand setup with MMKV persistence in Expo",
-            },
-            {
-              t: "doc",
-              label: "Zustand: persist middleware",
-              url: "https://docs.pmnd.rs/zustand/integrations/persisting-store-data",
-              note: "Persist with custom storage adapters — the mobile pattern",
-            },
-          ],
-          review:
-            "Create a zustand store for the map app: selectedLocation, recentSearches, userProfile. Persist userProfile and recentSearches to MMKV. Create a music slice with add/remove/update actions. Add TypeScript types throughout.",
-        },
-        {
-          phase: 1,
-          title: "TanStack Query in React Native",
-          sub: "Server state, caching, refetch-on-app-focus",
-          badge: "b-mobile",
-          bl: "same library new context",
-          tags: [
-            "@tanstack/react-query",
-            "useQuery",
-            "useMutation",
-            "QueryClient",
-            "staleTime",
-            "gcTime",
-            "refetchOnAppFocus",
-            "AppState integration",
-            "Optimistic updates",
-            "Offline queries",
-          ],
-          bridge:
-            "React Query works identically to web. The mobile superpower is <strong>refetchOnAppFocus</strong>: when the user returns from another app, queries automatically refetch. You wire this to AppState events — a 5-line setup. Also, staleTime lets you control how long cached data is trusted without network — critical for mobile where every API call costs battery and data.",
-          resources: [
-            {
-              t: "yt",
-              label: "TanStack Query in React Native — Simon Grimm",
-              url: "https://www.youtube.com/watch?v=4k9LL_6P1qY",
-              note: "Full setup with AppState integration, offline support, background refetch",
-            },
-            {
-              t: "doc",
-              label: "TanStack Query: React Native guide",
-              url: "https://tanstack.com/query/latest/docs/framework/react/react-native",
-              note: "RN-specific setup, AppState integration, online manager",
-            },
-          ],
-          review:
-            "Fetch music list from an API with useQuery (staleTime: 5 minutes). Add a useMutation that creates a new record and optimistically updates the list. Test offline — the app must show cached data without network.",
-        },
-        {
-          phase: 1,
-          title: "Forms & keyboard handling",
-          sub: "react-hook-form + mobile keyboard UX",
-          badge: "b-mobile",
-          bl: "web form + mobile UX",
-          tags: [
-            "react-hook-form",
-            "KeyboardAvoidingView",
-            "KeyboardAwareScrollView",
-            "Controller",
-            "TextInput props",
-            "returnKeyType",
-            "onSubmitEditing",
-            "inputMode",
-            "autoCapitalize",
-            "secureTextEntry",
-          ],
-          bridge:
-            "react-hook-form with &lt;Controller&gt; wraps RN's &lt;TextInput&gt; exactly like it wraps HTML inputs — same register(), handleSubmit(), formState.errors API. The critical mobile difference: the keyboard pushes your form offscreen. You must wrap forms in KeyboardAvoidingView (or react-native-keyboard-aware-scroll-view for complex forms).",
-          resources: [
-            {
-              t: "yt",
-              label: "React Native Forms with RHF + Zod — Simon Grimm",
-              url: "https://www.youtube.com/watch?v=Y7bSGwWxPiQ",
-              note: "Complete react-hook-form + zod validation in React Native",
-            },
-            {
-              t: "doc",
-              label: "RN: TextInput props",
-              url: "https://reactnative.dev/docs/textinput",
-              note: "All TextInput props — many are mobile-only (returnKeyType, onSubmitEditing, etc)",
-            },
-          ],
-          review:
-            "Build a music submission form: title, artist, genre, year. Use react-hook-form + zod validation. The form must stay visible above the keyboard on both iOS and Android without manual scroll.",
-        },
-        {
-          phase: 1,
-          title: "AsyncStorage & MMKV",
-          sub: "Device persistence — the localStorage equivalent",
-          badge: "b-mobile",
-          bl: "replaces localStorage",
-          tags: [
-            "@react-native-async-storage/async-storage",
-            "react-native-mmkv",
-            "Encrypted storage",
-            "Expo SecureStore",
-            "JSON serialization",
-            "Storage hooks",
-            "Migration strategy",
-          ],
-          bridge:
-            "AsyncStorage is localStorage but async — same key/value API, you just await it. MMKV is 30× faster and synchronous. Rule of thumb: JWT tokens → SecureStore (iOS Keychain encrypted); user preferences, UI state → MMKV (fast, synchronous); large structured data → SQLite. Don't reach for AsyncStorage first.",
-          resources: [
-            {
-              t: "yt",
-              label: "MMKV in React Native — Marc Rousavy",
-              url: "https://www.youtube.com/watch?v=3P9a2IbMaUc",
-              note: "Creator explains when to use MMKV vs AsyncStorage vs SecureStore",
-            },
-            {
-              t: "doc",
-              label: "Expo SecureStore",
-              url: "https://docs.expo.dev/versions/latest/sdk/securestore/",
-              note: "Encrypted storage backed by iOS Keychain and Android Keystore",
-            },
-          ],
-          review:
-            "Build a storage layer: JWT in SecureStore, user preferences in MMKV, API response cache in AsyncStorage with expiry. Write a useStorage custom hook that abstracts the right storage for each data type.",
-        },
-        {
-          phase: 1,
-          title: "Networking & offline handling",
-          sub: "NetInfo, retry logic, offline queues",
-          badge: "b-mobile",
-          bl: "critical for mobile",
-          tags: [
-            "@react-native-community/netinfo",
-            "useNetInfo",
-            "Offline detection",
-            "Queue mutations offline",
-            "TanStack Query online manager",
-            "Background fetch",
-            "Retry strategies",
-            "Connection type",
-          ],
-          bridge:
-            "In Next.js you never handled offline — users see a browser error page. On mobile, users expect the app to work offline and sync when reconnected. NetInfo detects connectivity state and type (wifi, 4G, etc.). Wiring NetInfo to TanStack Query's onlineManager means all queries automatically pause/resume with connectivity.",
-          resources: [
-            {
-              t: "yt",
-              label: "Offline-first React Native — Jamon Holmgren",
-              url: "https://www.youtube.com/watch?v=oBFoMaVXyFQ",
-              note: "Comprehensive talk on offline-first patterns with mutation queuing",
-            },
-            {
-              t: "doc",
-              label: "RN NetInfo",
-              url: "https://github.com/react-native-netinfo/react-native-netinfo",
-              note: "Connectivity detection, type, strength, effectiveType",
-            },
-          ],
-          review:
-            "Show a persistent offline banner when network is lost. Queue any failed mutations and auto-retry when connection restores. Show 'reconnecting...' state. Store last successful response to MMKV as fallback.",
-        },
-        // ── Phase 2
-        {
-          phase: 2,
-          title: "Permissions — the gatekeeper",
-          sub: "Declare before ask, ask before use",
-          badge: "b-mobile",
-          bl: "mobile-only concept",
-          tags: [
-            "expo-permissions",
-            "requestPermissionsAsync()",
-            "PermissionStatus",
-            "Info.plist (iOS)",
-            "AndroidManifest.xml",
-            "Runtime vs compile-time permissions",
-            "expo-build-properties",
-            "Permission rationale",
-          ],
-          bridge:
-            "On web, navigator.geolocation.getCurrentPosition() auto-prompts the user. In RN, you must <strong>declare permissions in native config files before you can even ask the user</strong>. iOS Info.plist needs NSLocationWhenInUseUsageDescription; Android needs ACCESS_FINE_LOCATION in AndroidManifest.xml. Without these declarations, the app crashes silently.",
-          resources: [
-            {
-              t: "yt",
-              label: "Expo Permissions deep dive — Simon Grimm",
-              url: "https://www.youtube.com/watch?v=2F_FFlNfRrs",
-              note: "All permission patterns including denied state, rationale dialogs, settings redirect",
-            },
-            {
-              t: "doc",
-              label: "Expo: Permissions guide",
-              url: "https://docs.expo.dev/guides/permissions/",
-              note: "Every permission, platform differences, config plugin setup",
-            },
-          ],
-          review:
-            "Set up permissions in app.json for Camera, Location, and Media Library. Write a usePermissions(permissionType) hook that requests, checks, handles denied state, and opens Settings when permanently denied.",
-        },
-        {
-          phase: 2,
-          title: "Camera & image picker",
-          sub: "expo-camera + expo-image-picker",
-          badge: "b-mobile",
-          bl: "device-native",
-          tags: [
-            "expo-image-picker",
-            "expo-camera",
-            "launchImageLibraryAsync()",
-            "launchCameraAsync()",
-            "MediaTypeOptions",
-            "ImagePickerResult",
-            "base64",
-            "uri",
-            "exif",
-            "CameraView",
-          ],
-          bridge:
-            "On web you use &lt;input type='file'&gt;. In RN, ImagePicker.launchImageLibraryAsync() opens the native OS photo picker. launchCameraAsync() opens the camera directly. Both return a <strong>URI</strong> — a local file path on the device, not a Blob. You use this URI to display the image or upload it.",
-          resources: [
-            {
-              t: "yt",
-              label: "Image Picker & Camera in Expo — Simon Grimm",
-              url: "https://www.youtube.com/watch?v=jz7vKo_Wmlc",
-              note: "Full implementation: permissions, picker, camera, preview, compression",
-            },
-            {
-              t: "doc",
-              label: "expo-image-picker docs",
-              url: "https://docs.expo.dev/versions/latest/sdk/imagepicker/",
-              note: "All options: quality, aspect ratio, base64, EXIF data, multiple selection",
-            },
-          ],
-          review:
-            "Build an image picker with camera fallback. Display a preview. Compress the selected image to under 500KB using the quality option. Show file size and dimensions before upload. Handle permission denied gracefully.",
-        },
-        {
-          phase: 2,
-          title: "Image upload to backend / S3",
-          sub: "FormData, multipart, presigned URLs, progress",
-          badge: "b-mobile",
-          bl: "same concept new context",
-          tags: [
-            "FormData",
-            "fetch multipart/form-data",
-            "expo-file-system",
-            "FileSystem.uploadAsync()",
-            "AWS S3 presigned URL",
-            "Upload progress",
-            "Upload queue",
-            "Content-Type",
-            "Base64 vs URI upload",
-          ],
-          bridge:
-            "In Next.js you POST FormData from a file input. In RN, you construct FormData from a local URI. FileSystem.uploadAsync() is the cleanest approach for large files — it gives you progress events and runs off the JS thread. Presigned S3 URLs mean your backend generates a URL and the app uploads directly to S3, reducing server load. Identical concept to web.",
-          resources: [
-            {
-              t: "yt",
-              label: "Image Upload to S3 in React Native — notJust.dev",
-              url: "https://www.youtube.com/watch?v=QSHnkR_NqEo",
-              note: "Full presigned URL upload flow with real-time progress bar",
-            },
-            {
-              t: "doc",
-              label: "Expo FileSystem: uploadAsync",
-              url: "https://docs.expo.dev/versions/latest/sdk/filesystem/#filesystemuploadasyncurl-fileuri-options",
-              note: "Upload task, progress events, cancellation, headers",
-            },
-          ],
-          review:
-            "Upload a selected image to your backend (or mock S3). Show upload progress as a progress bar. Handle network errors with retry logic. Add cancellation support. Store the returned URL in the music record.",
-        },
-        {
-          phase: 2,
-          title: "Location & GPS",
-          sub: "expo-location + live tracking + reverse geocoding",
-          badge: "b-map",
-          bl: "maps foundation",
-          tags: [
-            "expo-location",
-            "getCurrentPositionAsync()",
-            "watchPositionAsync()",
-            "LocationAccuracy",
-            "Background location",
-            "Geofencing",
-            "reverseGeocodeAsync()",
-            "LocationSubscription",
-            "Last known location",
-          ],
-          bridge:
-            "Similar to browser's navigator.geolocation but with more precision control. watchPositionAsync() is like browser's watchPosition() but returns a subscription object you must remove on unmount. Background location (tracking while app is closed) requires additional permission declarations in both platforms — not available in Expo Go.",
-          resources: [
-            {
-              t: "yt",
-              label: "Expo Location & Maps Tutorial — Simon Grimm",
-              url: "https://www.youtube.com/watch?v=xGzHMCgkAm8",
-              note: "GPS setup, watchPosition, reverse geocoding, all in one video",
-            },
-            {
-              t: "doc",
-              label: "expo-location docs",
-              url: "https://docs.expo.dev/versions/latest/sdk/location/",
-              note: "All accuracy levels, background tasks, geofencing API",
-            },
-          ],
-          review:
-            "Get current GPS location and display coordinates. Track location with watchPositionAsync() — update displayed coords in real time. Reverse geocode to show a human-readable address. Show distance from a fixed point in Addis Ababa.",
-        },
-        {
-          phase: 2,
-          title: "Push notifications",
-          sub: "expo-notifications for iOS & Android",
-          badge: "b-mobile",
-          bl: "platform-specific",
-          tags: [
-            "expo-notifications",
-            "Expo Push Token",
-            "FCM (Android)",
-            "APNs (iOS)",
-            "Notification channels",
-            "Local notifications",
-            "Remote notifications",
-            "Background handling",
-            "Notification categories",
-            "expo-device",
-          ],
-          bridge:
-            "iOS and Android have completely different push systems (APNs vs FCM) but expo-notifications abstracts both. Getting a push token identifies a specific device installation — send it to your backend and store it against the user. You then call Expo's push service with the token to deliver notifications to that device.",
-          resources: [
-            {
-              t: "yt",
-              label: "Push Notifications in Expo — Simon Grimm",
-              url: "https://www.youtube.com/watch?v=czq0zcjMcOw",
-              note: "Full push notification setup for both platforms: local + remote + tap handling",
-            },
-            {
-              t: "doc",
-              label: "Expo Notifications",
-              url: "https://docs.expo.dev/versions/latest/sdk/notifications/",
-              note: "Token registration, local scheduling, handling notification taps",
-            },
-          ],
-          review:
-            "Register for push notifications and log the Expo push token. Send a local notification when image upload completes. Handle notification tap to navigate to the relevant screen. Test on both iOS and Android physical devices.",
-        },
-        // ── Phase 3
-        {
-          phase: 3,
-          title: "MapLibre GL — setup & basics",
-          sub: "Open-source maps, no API billing",
-          badge: "b-map",
-          bl: "core feature",
-          tags: [
-            "@maplibre/maplibre-react-native",
-            "MapView",
-            "Camera",
-            "UserLocation",
-            "StyleURL",
-            "Tile sources",
-            "MapTiler",
-            "OpenFreeMap",
-            "Vector tiles",
-            "Raster tiles",
-            "Config plugin",
-          ],
-          bridge:
-            "MapLibre is Mapbox open-sourced — free with no usage billing. The RN component wraps a native map view (not a WebView), so it renders at 60fps. Camera controls the viewport (center, zoom, bearing, pitch) — similar to setting viewport state in react-map-gl on web. Use OpenFreeMap for free development tiles, MapTiler for production.",
-          resources: [
-            {
-              t: "yt",
-              label: "MapLibre React Native Setup — JavaScript Mastery",
-              url: "https://www.youtube.com/watch?v=2vHt04rmMOs",
-              note: "Full setup with custom tile server, map rendering, and user location",
-            },
-            {
-              t: "doc",
-              label: "MapLibre React Native docs",
-              url: "https://maplibre.org/maplibre-react-native/docs/setup/",
-              note: "Installation, Camera API, StyleURL patterns, config plugin",
-            },
-            {
-              t: "code",
-              label: "OpenFreeMap — free tiles, no account needed",
-              url: "https://openfreemap.org/",
-              note: "Free hosted vector tiles — perfect for development and low-traffic production",
-            },
-          ],
-          review:
-            "Render a MapLibre map centered on Addis Ababa (lat 9.03, lng 38.74). Add a button that animates the camera to the user's GPS location. Show the user location dot. Switch between street and satellite tile sources.",
-        },
-        {
-          phase: 3,
-          title: "Markers, annotations & callouts",
-          sub: "Custom pins, GeoJSON layers, clustering",
-          badge: "b-map",
-          bl: "maps feature",
-          tags: [
-            "PointAnnotation",
-            "MarkerView",
-            "ShapeSource",
-            "SymbolLayer",
-            "CircleLayer",
-            "Callout",
-            "GeoJSON FeatureCollection",
-            "Image assets in map",
-            "Cluster layers",
-            "maplibre expressions",
-          ],
-          bridge:
-            "MapLibre uses GeoJSON as its data format — a JSON standard for geographic data you likely know from web maps. ShapeSource feeds a GeoJSON FeatureCollection into the map; SymbolLayer or CircleLayer renders it visually. This is the same pattern as Mapbox GL JS on web — if you've used it before, this will feel familiar.",
-          resources: [
-            {
-              t: "yt",
-              label: "MapLibre Markers, GeoJSON & Clustering — notJust.dev",
-              url: "https://www.youtube.com/watch?v=vn41BPpwBp8",
-              note: "Custom markers, point clustering, callouts with complete GeoJSON data",
-            },
-            {
-              t: "doc",
-              label: "MapLibre: ShapeSource + SymbolLayer",
-              url: "https://maplibre.org/maplibre-react-native/docs/components/ShapeSource/",
-              note: "GeoJSON sources, symbol rendering, clustering configuration",
-            },
-          ],
-          review:
-            "Add 20 mock location pins to the map. Implement clustering so nearby pins merge into a count circle (zoom in to expand). Tap a pin to show a callout with name, category, and distance from user's location.",
-        },
-        {
-          phase: 3,
-          title: "Map interactions & gestures",
-          sub: "onPress, region changes, camera animation",
-          badge: "b-map",
-          bl: "maps feature",
-          tags: [
-            "onPress (map)",
-            "onRegionDidChange",
-            "onMapIdle",
-            "flyTo()",
-            "fitBounds()",
-            "Animated camera",
-            "MapLibre expressions",
-            "Runtime styling",
-            "Bounding box queries",
-            "Debouncing region changes",
-          ],
-          bridge:
-            "onRegionDidChange fires when the user stops panning — use this for 'search this area' patterns (debounce by 500ms). fitBounds() frames a set of coordinates in the viewport — like map.fitBounds() in Leaflet. Camera.flyTo() smoothly animates to a location — the same as setViewport with animation in react-map-gl.",
-          resources: [
-            {
-              t: "yt",
-              label:
-                "MapLibre camera animations & region changes — Simon Grimm",
-              url: "https://www.youtube.com/watch?v=xGzHMCgkAm8&t=900s",
-              note: "Camera animations, region change handlers, programmatic pan and zoom",
-            },
-            {
-              t: "doc",
-              label: "MapLibre: Camera component",
-              url: "https://maplibre.org/maplibre-react-native/docs/components/Camera/",
-              note: "All camera props, animation modes, bounds, heading",
-            },
-          ],
-          review:
-            "Add a 'locate me' FAB that flies the camera to GPS position with a spring animation. Implement 'search when map moves' — debounce onRegionDidChange by 500ms, fetch pins for the visible bounding box, update the map.",
-        },
-        {
-          phase: 3,
-          title: "Offline maps & tile caching",
-          sub: "Download tiles for no-internet navigation",
-          badge: "b-map",
-          bl: "offline feature",
-          tags: [
-            "offlinePack",
-            "MapLibre offline storage",
-            "Tile download",
-            "OfflinePackDownloadState",
-            "Pack progress events",
-            "Storage limits",
-            "MBTiles",
-            "Region bounding box",
-            "Pack management",
-          ],
-          bridge:
-            "No direct web equivalent — this is map-specific offline storage. You define a bounding box + zoom range, and MapLibre downloads all vector tiles for that area to the device. Users can then navigate the map with zero internet. Critical for Ethiopia where connectivity is often intermittent in field settings.",
-          resources: [
-            {
-              t: "doc",
-              label: "MapLibre: Offline packs",
-              url: "https://maplibre.org/maplibre-react-native/docs/guides/Offline/",
-              note: "createPack(), progress events, resuming downloads, deleting packs",
-            },
-            {
-              t: "yt",
-              label: "Offline maps in React Native — Eric Dahl",
-              url: "https://www.youtube.com/watch?v=oKbPVt-d_Qg",
-              note: "Tile caching strategy, storage management, progress UI",
-            },
-          ],
-          review:
-            "Add a 'Download Addis Ababa map' button that downloads tiles for zoom levels 10–15. Show a progress bar during download. Verify the map renders correctly in airplane mode. Add a storage manager showing pack size and a delete button.",
-        },
-        // ── Phase 4
-        {
-          phase: 4,
-          title: "Animations with Reanimated 3",
-          sub: "60fps native animations on the UI thread",
-          badge: "b-mobile",
-          bl: "mobile-specific",
-          tags: [
-            "react-native-reanimated",
-            "useSharedValue",
-            "useAnimatedStyle",
-            "withTiming",
-            "withSpring",
-            "withSequence",
-            "Layout animations",
-            "FadeIn / SlideInUp",
-            "Entering / Exiting",
-            "cancelAnimation",
-          ],
-          bridge:
-            "CSS animations and Framer Motion run on the JS thread — fine for web. On mobile, JS-thread animations can drop frames when the app is doing other work. Reanimated 3 runs animations entirely on the UI thread (native), guaranteeing 60fps. useSharedValue is like useRef for animation values; useAnimatedStyle is like style but reactive to shared values.",
-          resources: [
-            {
-              t: "yt",
-              label: "Reanimated 3 Full Course — William Candillon",
-              url: "https://www.youtube.com/watch?v=yz9E10Es28s",
-              note: "The definitive Reanimated 3 tutorial by the react-native-skia creator",
-            },
-            {
-              t: "yt",
-              label: "Practical Reanimated animations — Simon Grimm",
-              url: "https://www.youtube.com/watch?v=GiIbB4HKIVQ",
-              note: "Fade, slide, spring, layout animations with real app examples",
-            },
-          ],
-          review:
-            "Animate a map pin dropping in with useAnimatedStyle + withSpring. Animate list items entering/exiting with layout animations (FadeInDown / FadeOutRight). Build a loading skeleton that pulses with withRepeat + withTiming.",
-        },
-        {
-          phase: 4,
-          title: "Gestures with Gesture Handler",
-          sub: "Swipe, pinch, pan — native gesture recognition",
-          badge: "b-mobile",
-          bl: "mobile-specific",
-          tags: [
-            "react-native-gesture-handler",
-            "GestureDetector",
-            "Gesture.Pan()",
-            "Gesture.Pinch()",
-            "Gesture.Tap()",
-            "Simultaneous gestures",
-            "GestureHandlerRootView",
-            "runOnJS",
-            "composedGestures",
-          ],
-          bridge:
-            "On web you use onClick, onMouseMove. On mobile, touch events are fundamentally different — multitouch, pressure, velocity. Gesture Handler intercepts gestures on the native thread before JS sees them. This is why swipe-to-dismiss, pinch-to-zoom, and drag-and-drop feel native — the gesture tracking never drops a frame.",
-          resources: [
-            {
-              t: "yt",
-              label: "Gesture Handler + Reanimated — William Candillon",
-              url: "https://www.youtube.com/watch?v=_lzFjJOFJYM",
-              note: "Pan gesture, swipe to dismiss, pinch zoom — composing complex gestures",
-            },
-            {
-              t: "doc",
-              label: "Gesture Handler: API reference",
-              url: "https://docs.swmansion.com/react-native-gesture-handler/docs/",
-              note: "All gesture types, simultaneous composition, runOnJS",
-            },
-          ],
-          review:
-            "Add swipe-to-dismiss on the music detail modal. Add pinch-to-zoom on a photo (verify it doesn't conflict with MapLibre's built-in pinch). Build a draggable floating action button that snaps to screen edges.",
-        },
-        {
-          phase: 4,
-          title: "Bottom sheets & modals",
-          sub: "@gorhom/bottom-sheet — the industry standard",
-          badge: "b-mobile",
-          bl: "mobile UI pattern",
-          tags: [
-            "@gorhom/bottom-sheet",
-            "BottomSheet",
-            "BottomSheetModal",
-            "snapPoints",
-            "BottomSheetFlatList",
-            "BottomSheetTextInput",
-            "Dynamic sizing",
-            "Keyboard aware sheet",
-            "Backdrop",
-          ],
-          bridge:
-            "Bottom sheets are the mobile equivalent of web drawers or modals — but they're the <em>dominant</em> UI pattern in mobile apps, used for detail views, filters, forms, and menus. @gorhom/bottom-sheet is the industry standard, built on Reanimated 3 + Gesture Handler. It handles keyboard avoidance, momentum scrolling, and snap points automatically.",
-          resources: [
-            {
-              t: "yt",
-              label: "Bottom Sheet full tutorial — Simon Grimm",
-              url: "https://www.youtube.com/watch?v=AU-4N0LMZ00",
-              note: "@gorhom/bottom-sheet with snap points, lists, keyboard handling, modal variant",
-            },
-            {
-              t: "doc",
-              label: "@gorhom/bottom-sheet docs",
-              url: "https://ui.gorhom.dev/components/bottom-sheet/",
-              note: "All props, BottomSheetModal, backdrop customization, ref API",
-            },
-          ],
-          review:
-            "Add a bottom sheet to the map that slides up when a pin is tapped, showing location details with a nested FlatList. Add a filter bottom sheet with form inputs — the sheet must expand above the keyboard automatically.",
-        },
-        {
-          phase: 4,
-          title: "Optimized lists with FlashList",
-          sub: "Shopify FlashList — 10× faster than FlatList",
-          badge: "b-mobile",
-          bl: "performance",
-          tags: [
-            "@shopify/flash-list",
-            "estimatedItemSize",
-            "Cell recycling",
-            "getItemType",
-            "ListEmptyComponent",
-            "ListHeaderComponent",
-            "StickyHeaders",
-            "FlashList vs FlatList",
-            "Recycler benchmark",
-          ],
-          bridge:
-            "FlatList virtualizes but still has JS-thread overhead per cell. FlashList by Shopify is a drop-in replacement that recycles native cells directly — similar to how RecyclerView works in Android natively. If your music or location list has more than 100 items, FlashList is the right choice. Migrating is mostly just changing the import.",
-          resources: [
-            {
-              t: "yt",
-              label: "FlashList vs FlatList benchmark — notJust.dev",
-              url: "https://www.youtube.com/watch?v=2gqVDiMZCCk",
-              note: "Side-by-side performance comparison and migration walkthrough",
-            },
-            {
-              t: "doc",
-              label: "FlashList docs",
-              url: "https://shopify.github.io/flash-list/docs/",
-              note: "estimatedItemSize, getItemType for mixed content, performance measuring",
-            },
-          ],
-          review:
-            "Replace your FlatList with FlashList. Add getItemType for different row layouts (header vs content). Measure frame rate with the built-in performance tool before and after. Target consistent 60fps while scrolling 1000+ items.",
-        },
-        {
-          phase: 4,
-          title: "Theming & design systems",
-          sub: "NativeWind, dark mode, design tokens",
-          badge: "b-mobile",
-          bl: "scales with project",
-          tags: [
-            "NativeWind v4",
-            "useColorScheme",
-            "ThemeContext",
-            "Design tokens",
-            "Adaptive colors",
-            "Platform-specific fonts",
-            "Spacing scale",
-            "Typography scale",
-            "react-native-unistyles",
-          ],
-          bridge:
-            "There's no Tailwind CSS in React Native — no CSS at all. NativeWind brings Tailwind utility class syntax to RN, compiled to StyleSheet at build time. The dark: and platform: variants work as you'd expect. This is the closest you'll feel to your Next.js Tailwind workflow in React Native.",
-          resources: [
-            {
-              t: "yt",
-              label: "NativeWind v4 full setup — Simon Grimm",
-              url: "https://www.youtube.com/watch?v=ZHTkJRdC5ac",
-              note: "NativeWind v4 with expo-router, dark mode, and custom theme",
-            },
-            {
-              t: "doc",
-              label: "NativeWind docs",
-              url: "https://www.nativewind.dev/",
-              note: "Setup, dark: variant, platform: variant, custom colors",
-            },
-          ],
-          review:
-            "Add NativeWind to your app. Create a color palette with dark and light variants. Build reusable Button, Card, and Badge components using Tailwind classes. Verify both themes look correct on iOS and Android.",
-        },
-        // ── Phase 5
-        {
-          phase: 5,
-          title: "MMKV — fast key-value caching",
-          sub: "Synchronous encrypted storage for frequent reads",
-          badge: "b-mobile",
-          bl: "performance critical",
-          tags: [
-            "react-native-mmkv",
-            "MMKV instances",
-            "Encryption key",
-            "TypeScript storage class",
-            "Storage listeners",
-            "Cache headers (ETag)",
-            "Conditional GET requests",
-            "Migration from AsyncStorage",
-          ],
-          bridge:
-            "Think of MMKV as a supercharged localStorage — synchronous (no await), 30× faster, and encrypted by default. Ideal for caching API response metadata (ETags, Last-Modified headers) so you can implement conditional GET requests (If-None-Match). When the server returns 304 Not Modified, you serve the MMKV-cached response instantly.",
-          resources: [
-            {
-              t: "yt",
-              label: "MMKV deep dive — Marc Rousavy",
-              url: "https://www.youtube.com/watch?v=3P9a2IbMaUc",
-              note: "Library creator explains encryption, multiple instances, and storage strategy",
-            },
-            {
-              t: "code",
-              label: "react-native-mmkv GitHub",
-              url: "https://github.com/mrousavy/react-native-mmkv",
-              note: "TypeScript API, encryption, listener hooks, migration from AsyncStorage",
-            },
-          ],
-          review:
-            "Cache API response ETags in MMKV. Build a fetch wrapper that sends If-None-Match on repeat requests and returns cached data on 304. Measure the time saved vs always re-fetching. Build a useCachedFetch hook.",
-        },
-        {
-          phase: 5,
-          title: "SQLite with expo-sqlite v14",
-          sub: "Relational local database + Drizzle ORM",
-          badge: "b-mobile",
-          bl: "structured cache",
-          tags: [
-            "expo-sqlite",
-            "SQLiteProvider",
-            "useSQLiteContext",
-            "Drizzle ORM",
-            "WAL mode",
-            "Migrations",
-            "Transactions",
-            "Prepared statements",
-            "Reactive queries",
-            "TypeScript schema",
-          ],
-          bridge:
-            "This is like having PostgreSQL on the device. Use SQLite when your local data has structure and relationships — music → artists → albums, or locations → categories → reviews. The new expo-sqlite v14 API with useSQLiteContext() is reactive (like React Query but for local DB). Drizzle ORM gives you the same type-safe query builder you might know from web.",
-          resources: [
-            {
-              t: "yt",
-              label: "expo-sqlite v14 + Drizzle ORM — Simon Grimm",
-              url: "https://www.youtube.com/watch?v=2x9SXLK8DQg",
-              note: "Full SQLite + Drizzle setup with TypeScript — the current best practice",
-            },
-            {
-              t: "doc",
-              label: "expo-sqlite v14 docs",
-              url: "https://docs.expo.dev/versions/latest/sdk/sqlite/",
-              note: "SQLiteProvider, useSQLiteContext, migrations, WAL mode",
-            },
-          ],
-          review:
-            "Create a local SQLite database with a music table (title, artist, genre, synced_at, server_id). Add Drizzle schema. Build a sync function that upserts API data locally. All UI reads from SQLite, never directly from the API.",
-        },
-        {
-          phase: 5,
-          title: "WatermelonDB — reactive offline-first DB",
-          sub: "Sync protocol for complex offline apps",
-          badge: "b-mobile",
-          bl: "advanced offline",
-          tags: [
-            "@nozbe/watermelondb",
-            "Model class",
-            "@table / @field",
-            "@relation",
-            "observe()",
-            "synchronize()",
-            "Pull changes",
-            "Push changes",
-            "Conflict resolution",
-            "Lazy loading",
-          ],
-          bridge:
-            "WatermelonDB solves the hardest mobile problem: syncing local changes with a server after the app was offline for days. You define a sync protocol (pull server changes → push local changes) and WatermelonDB handles conflict resolution. The observe() method makes UI update reactively when sync finishes — no manual state updates needed.",
-          resources: [
-            {
-              t: "yt",
-              label: "WatermelonDB introduction — Nozbe",
-              url: "https://www.youtube.com/watch?v=UlZ1QnFF4Cw",
-              note: "Library creator explains the sync protocol and architecture clearly",
-            },
-            {
-              t: "doc",
-              label: "WatermelonDB: Sync protocol",
-              url: "https://watermelondb.dev/docs/Sync/Frontend",
-              note: "Pull/push protocol, conflict resolution, incrementalSync",
-            },
-          ],
-          review:
-            "Set up WatermelonDB with a Music model. Implement a sync() function that pulls from your API and reconciles with local changes. Make the music list observe() its collection — verify it updates instantly when sync completes.",
-        },
-        {
-          phase: 5,
-          title: "Background fetch & sync",
-          sub: "Work while the app is closed",
-          badge: "b-mobile",
-          bl: "mobile-only",
-          tags: [
-            "expo-background-fetch",
-            "expo-task-manager",
-            "registerTaskAsync()",
-            "Minimum interval",
-            "iOS Background App Refresh",
-            "Android WorkManager",
-            "Background location",
-            "Task result types",
-            "MMKV sync log",
-          ],
-          bridge:
-            "In Next.js, everything stops when the tab is closed. Background Fetch lets your app wake up periodically (minimum 15 min on iOS, configurable on Android) to sync data, download map tiles, or process pending uploads — even when the user isn't using the app. iOS throttles this aggressively; Android is more permissive.",
-          resources: [
-            {
-              t: "yt",
-              label: "Expo Background Tasks — notJust.dev",
-              url: "https://www.youtube.com/watch?v=ZqV1PFHPt4Y",
-              note: "Background fetch + task manager with iOS/Android behavioral differences",
-            },
-            {
-              t: "doc",
-              label: "expo-background-fetch",
-              url: "https://docs.expo.dev/versions/latest/sdk/background-fetch/",
-              note: "Task registration, minimum interval, result types, iOS vs Android",
-            },
-          ],
-          review:
-            "Register a background task that syncs music data and writes a timestamp to MMKV. Show 'Last synced X mins ago' in the UI using that timestamp. Background the app for 15+ minutes and verify the sync ran.",
-        },
-        // ── Phase 6
-        {
-          phase: 6,
-          title: "EAS Build — cloud CI/CD for mobile",
-          sub: "Build iOS & Android without touching Xcode",
-          badge: "b-build",
-          bl: "build system",
-          tags: [
-            "EAS Build",
-            "eas.json",
-            "Build profiles",
-            "Development build",
-            "Preview build",
-            "Production build",
-            "EAS credentials",
-            "iOS provisioning",
-            "Android keystore",
-            "eas build --platform all",
-          ],
-          bridge:
-            "EAS Build is like Vercel/Netlify but for mobile apps. You run eas build and Expo's cloud servers build the iOS .ipa and Android .apk/.aab for you — no Xcode, no Android Studio required for the actual compilation. Since you're on Linux, EAS Build is the <em>only</em> way to build for iOS without a Mac.",
-          resources: [
-            {
-              t: "yt",
-              label: "EAS Build complete tutorial — Simon Grimm",
-              url: "https://www.youtube.com/watch?v=oPKXSyYbxSQ",
-              note: "Full setup: dev, preview, production profiles, credential management",
-            },
-            {
-              t: "yt",
-              label: "Expo EAS crash course — notJust.dev",
-              url: "https://www.youtube.com/watch?v=LUFHXsBcW6w",
-              note: "Zero to deployed app on both stores — step by step walkthrough",
-            },
-            {
-              t: "doc",
-              label: "EAS Build: Introduction",
-              url: "https://docs.expo.dev/build/introduction/",
-              note: "Build profiles, eas.json configuration, managing credentials",
-            },
-          ],
-          review:
-            "Set up eas.json with development + production profiles. Run a development build for your physical Android device. Verify Camera, Location, and MapLibre all work in the dev build (they don't work in Expo Go).",
-        },
-        {
-          phase: 6,
-          title: "iOS: signing, provisioning & TestFlight",
-          sub: "Apple Developer Portal to device",
-          badge: "b-build",
-          bl: "iOS specific",
-          tags: [
-            "Apple Developer Account ($99/yr)",
-            "Bundle identifier",
-            "Provisioning profile",
-            "Distribution certificate",
-            "App Store Connect",
-            "TestFlight",
-            "Entitlements",
-            "Capabilities (Maps, Push, Location)",
-            "ipa file",
-          ],
-          bridge:
-            "iOS requires a paid Apple Developer account and a multi-step signing process before any device can install the app. EAS handles credential generation automatically with <code>eas credentials</code> — you just need the Apple account credentials. The hardest part is the App Store Connect setup, not the code.",
-          resources: [
-            {
-              t: "yt",
-              label: "iOS App Store submission 2024 — notJust.dev",
-              url: "https://www.youtube.com/watch?v=oBbs_JRdQYM",
-              note: "Full App Store Connect + TestFlight submission flow from EAS build",
-            },
-            {
-              t: "doc",
-              label: "EAS: iOS app credentials",
-              url: "https://docs.expo.dev/app-signing/app-credentials/",
-              note: "Auto vs manual credentials, provisioning, certificate management",
-            },
-          ],
-          review:
-            "Generate iOS credentials with EAS (eas credentials). Submit a production build to TestFlight. Install on a physical iPhone via TestFlight. Verify push notifications and background location work in the signed build.",
-        },
-        {
-          phase: 6,
-          title: "Android: keystore, AAB & Play Store",
-          sub: "Google Play submission and keystore management",
-          badge: "b-build",
-          bl: "Android specific",
-          tags: [
-            "Android keystore",
-            "Key alias",
-            "AAB (Android App Bundle)",
-            "APK vs AAB",
-            "Google Play Console",
-            "Internal testing track",
-            "SHA-1 fingerprint",
-            "targetSdkVersion",
-            "minSdkVersion",
-            "ProGuard / R8",
-          ],
-          bridge:
-            "Android is more forgiving than iOS — you can sideload APKs directly to any device for testing without a store or developer account. For Play Store, you need a one-time $25 developer registration. <strong>Keep your keystore file forever</strong> — losing it means you can never update the app on existing users' devices.",
-          resources: [
-            {
-              t: "yt",
-              label: "Android Play Store submission — Simon Grimm",
-              url: "https://www.youtube.com/watch?v=oPKXSyYbxSQ&t=2400s",
-              note: "From EAS build to Google Play internal testing track",
-            },
-            {
-              t: "doc",
-              label: "EAS: Android credentials",
-              url: "https://docs.expo.dev/app-signing/app-credentials/#android-credentials",
-              note: "Keystore management, EAS managed vs self-managed, backup strategy",
-            },
-          ],
-          review:
-            "Build an Android AAB with EAS production profile. Submit to Google Play internal testing track. Install via Play Store on a physical Android device. Verify all features. Back up your keystore file to a secure location.",
-        },
-        {
-          phase: 6,
-          title: "Config plugins & native modules",
-          sub: "Extend Expo without ejecting",
-          badge: "b-build",
-          bl: "extends Expo",
-          tags: [
-            "Config plugins",
-            "app.json plugins[]",
-            "expo-build-properties",
-            "withAndroidManifest",
-            "withInfoPlist",
-            "withGradleProperties",
-            "@expo/config-plugins",
-            "Native module bridging",
-            "JSI modules",
-            "Bare workflow",
-          ],
-          bridge:
-            "Some native APIs aren't wrapped by Expo SDK yet. Config plugins let you modify native code (Info.plist, AndroidManifest.xml, build.gradle) <em>without ejecting</em>. They run at build time — like PostCSS plugins but for native config. MapLibre's config plugin adds native rendering support. Writing your own is like writing a babel plugin: transform → output.",
-          resources: [
-            {
-              t: "yt",
-              label: "Config Plugins explained — Evan Bacon (Expo)",
-              url: "https://www.youtube.com/watch?v=ykAunpDDKq4",
-              note: "Expo core team member explains the plugin system and writing custom ones",
-            },
-            {
-              t: "doc",
-              label: "Config plugins: Introduction",
-              url: "https://docs.expo.dev/config-plugins/introduction/",
-              note: "Mod system, withInfoPlist, withAndroidManifest, withGradleProperties",
-            },
-          ],
-          review:
-            "Write a config plugin that adds NSPhotoLibraryUsageDescription to iOS Info.plist with a custom message and adds a custom permission string to Android. Apply it in app.json. Verify in the built native app.",
-        },
-        // ── Phase 7
-        {
-          phase: 7,
-          title: "Testing React Native apps",
-          sub: "Jest, RNTL component tests, Maestro E2E",
-          badge: "b-mobile",
-          bl: "production quality",
-          tags: [
-            "Jest",
-            "@testing-library/react-native",
-            "renderHook",
-            "fireEvent",
-            "waitFor",
-            "act()",
-            "Mocking native modules",
-            "Maestro (E2E)",
-            "Detox",
-            "snapshot testing",
-            "Coverage reports",
-          ],
-          bridge:
-            "Jest works exactly as in React/Next.js. @testing-library/react-native is the RN equivalent of @testing-library/react — same getByText(), getByTestId(), fireEvent() API. The difference: native modules must be mocked (expo-location, expo-camera, MapLibre don't run in Jest's Node.js environment). Maestro is the easiest E2E tool — it uses YAML flows, no code required.",
-          resources: [
-            {
-              t: "yt",
-              label: "React Native Testing with Jest + RNTL — Simon Grimm",
-              url: "https://www.youtube.com/watch?v=UHoxBEBM4qQ",
-              note: "Full Jest + RNTL setup, mocking navigation and native modules",
-            },
-            {
-              t: "doc",
-              label: "RNTL: Getting started",
-              url: "https://callstack.github.io/react-native-testing-library/",
-              note: "Queries, event firing, async utilities, custom render with providers",
-            },
-          ],
-          review:
-            "Write unit tests for MusicService. Write RNTL tests for MusicList (render, tap, navigate). Mock expo-location. Write a Maestro E2E flow: launch → login → open map → tap a pin → verify callout. Achieve 70%+ coverage.",
-        },
-        {
-          phase: 7,
-          title: "OTA updates with EAS Update",
-          sub: "Ship JS fixes without app store review",
-          badge: "b-build",
-          bl: "production ops",
-          tags: [
-            "EAS Update",
-            "expo-updates",
-            "eas update",
-            "Update channels",
-            "Update branches",
-            "useUpdates()",
-            "Runtime version",
-            "Rollback",
-            "Rollout percentage",
-            "Critical patches",
-          ],
-          bridge:
-            "EAS Update lets you push JS and asset changes to users' phones without going through App Store or Play Store review (which takes 1–3 days). Only native code changes require a new EAS Build. This is like Vercel instant deploys but for mobile — ship bug fixes in minutes, not days. Channels (production, staging) let you control who gets what update.",
-          resources: [
-            {
-              t: "yt",
-              label: "EAS Update full tutorial — Simon Grimm",
-              url: "https://www.youtube.com/watch?v=TNomMRBSIUQ",
-              note: "Channels setup, rollout percentage, monitoring adoption, rollback",
-            },
-            {
-              t: "doc",
-              label: "EAS Update docs",
-              url: "https://docs.expo.dev/eas-update/introduction/",
-              note: "Channels, branches, runtime version compatibility, rollback",
-            },
-          ],
-          review:
-            "Set up EAS Update with production and staging channels. Push an OTA update that changes a UI string. Verify it appears on device without reinstalling the app. Test rolling back to the previous update.",
-        },
-        {
-          phase: 7,
-          title: "Performance profiling & optimization",
-          sub: "Hermes, Flipper, re-renders, bundle size",
-          badge: "b-mobile",
-          bl: "production quality",
-          tags: [
-            "Hermes engine",
-            "Flipper debugger",
-            "React DevTools Profiler",
-            "Performance Monitor",
-            "Unnecessary re-renders",
-            "memo() / useMemo / useCallback",
-            "expo-image vs Image",
-            "Bundle size analysis",
-            "New Architecture (JSI / TurboModules)",
-            "Perf.mark()",
-          ],
-          bridge:
-            "React DevTools Profiler works exactly as in web — same flame chart, same re-render highlighting. The mobile-specific tool is Flipper (Meta's debugger) which shows network requests, SQLite queries, and frame rates simultaneously in one view. Hermes is the JS engine used by RN — it starts significantly faster than V8 on mobile hardware.",
-          resources: [
-            {
-              t: "yt",
-              label: "React Native Performance — Catalin Miron",
-              url: "https://www.youtube.com/watch?v=1D417o2axHc",
-              note: "Frame drops, JS thread vs UI thread, Flipper profiling in depth",
-            },
-            {
-              t: "yt",
-              label: "Hermes & New Architecture — Meta Engineering",
-              url: "https://www.youtube.com/watch?v=j4g_IQkvWM8",
-              note: "Why Hermes, JSI explained, migrating to New Architecture",
-            },
-          ],
-          review:
-            "Profile your map + music list app. Find the top 3 unnecessary re-render chains with React DevTools. Fix with memo/useCallback. Test on a low-end Android device. Target 55+ fps while scrolling the map and music list together.",
-        },
-        {
-          phase: 7,
-          title: "Capstone — full Maps + music app, shipped",
-          sub: "Everything integrated, both stores deployed",
-          badge: "b-build",
-          bl: "milestone",
-          tags: [
-            "Full app architecture",
-            "Maps + FlatList",
-            "Offline-first sync",
-            "Image upload pipeline",
-            "Push notifications",
-            "iOS + Android EAS builds",
-            "EAS Update",
-            "Both stores submitted",
-            "README + architecture diagram",
-            "Demo video",
-          ],
-          bridge:
-            "This is your complete app: MapLibre map with custom pins, offline tile download, GPS location tracking, music CRUD with image upload to S3, offline SQLite sync with WatermelonDB, push notifications on both platforms, Zustand + React Query, NativeWind dark/light theme, EAS-built and submitted to TestFlight and Google Play internal testing.",
-          resources: [
-            {
-              t: "yt",
-              label: "Full React Native app walkthrough — notJust.dev",
-              url: "https://www.youtube.com/watch?v=zvp_b7HY2bQ",
-              note: "Complete app build — good architecture reference for your capstone review",
-            },
-            {
-              t: "code",
-              label: "Expo examples repository",
-              url: "https://github.com/expo/examples",
-              note: "Official Expo sample apps — reference for any pattern you're unsure about",
-            },
-          ],
-          review:
-            "Submit to TestFlight and Google Play internal testing. Write a README with architecture diagram mapping each feature to its implementation. Record a 2-minute demo video. List the 5 hardest problems you solved and how. You're done.",
-        },
-      ];
+<input type="file" id="importFile" accept="application/json" hidden>
 
-      // ── Storage ───────────────────────────────────────────────────────
-      const STORAGE_KEY = "rn72-progress";
-      let completed = new Set(
-        JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"),
-      );
-      function save() {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify([...completed]));
-      }
+<script>
+(function () {
+  "use strict";
 
-      // ── State ─────────────────────────────────────────────────────────
-      let activePhase = 0;
+  /* =========================================================
+     DATA
+     Every video below uses an exact watch URL:
+     https://www.youtube.com/watch?v=<ID>
+     ========================================================= */
+  var BLOCKS = [
+    { k: "watch",  label: "Watch & read", min: 45, key: "1" },
+    { k: "build",  label: "Build",        min: 60, key: "2" },
+    { k: "review", label: "Review",       min: 15, key: "3" }
+  ];
 
-      // ── Helpers ───────────────────────────────────────────────────────
-      function phaseColor(pi) {
-        return PHASES[pi].color;
-      }
-      function sessionsForPhase(pi) {
-        return PHASES[pi].sessions;
-      }
-      function doneInPhase(pi) {
-        return PHASES[pi].sessions.filter((i) => completed.has(i)).length;
-      }
-      function totalDone() {
-        return completed.size;
-      }
+  var WEEKS = [
+    { n: 1, from: 1,  to: 7,  name: "Think in mobile, not DOM" },
+    { n: 2, from: 8,  to: 14, name: "Navigation & forms" },
+    { n: 3, from: 15, to: 21, name: "Data & device APIs" },
+    { n: 4, from: 22, to: 30, name: "Polish & ship" }
+  ];
 
-      // ── Render sidebar ────────────────────────────────────────────────
-      function renderSidebar() {
-        // Overall progress
-        document.getElementById("op-pct").textContent = totalDone() + " / 36";
-        const bar = document.getElementById("op-bar");
-        bar.innerHTML = "";
-        PHASES.forEach((ph, pi) => {
-          const done = doneInPhase(pi);
-          const seg = document.createElement("div");
-          seg.className = "op-seg";
-          seg.style.background = ph.color;
-          seg.style.width = (done / 36) * 100 + "%";
-          bar.appendChild(seg);
+  var BUFFER_NOTE = "No new material today. Re-watch the one video you understood least this week, or re-read the docs for it.";
+
+  // v: [youtubeId, title, channel?]   d: [label, url]
+  var DAYS = [
+    { t: "Set up, then unlearn the DOM",
+      v: [["XCifkDC0yXA", "React Native Crash Course 2026 – Build a Complete Mobile App", "Traversy Media"]],
+      d: [["RN docs: Core components", "https://reactnative.dev/docs/intro-react-native-components"],
+          ["Expo: Create a project", "https://docs.expo.dev/get-started/create-a-project/"],
+          ["Expo Go (install on your phone)", "https://expo.dev/go"]],
+      b: "Run npx create-expo-app@latest and open it in Expo Go on your phone. Build a profile card with View, Text, Image and StyleSheet. No div, no CSS files.",
+      q: "List 5 things that behave differently from web React." },
+
+    { t: "Core components",
+      v: [["BUXnASp_WyQ", "React Native for Dummies 2026 – Full Beginner Crash Course", "Code with Beto"],
+          ["0ce9d2XhEsY", "React Native Fundamentals: View, Text & Image Components Explained (Beginner Guide)"]],
+      d: [["RN docs: Components and APIs", "https://reactnative.dev/docs/components-and-apis"]],
+      b: "Turn the profile card into a settings screen with TextInput, Pressable and a ScrollView inside a SafeAreaView.",
+      q: "What replaces onClick, <img> and <input> here?" },
+
+    { t: "Flexbox is the only layout system",
+      v: [["Al-f0mkKEsM", "Master React Native Layouts in 5 Minutes – Flexbox Guide 2025"],
+          ["ak-NFDpEiW0", "React Native Flexbox Mastery for Beginners (2025)"]],
+      d: [["RN docs: Layout with Flexbox", "https://reactnative.dev/docs/flexbox"]],
+      b: "Rebuild a header / content / footer layout and a two-column card grid using only Flexbox. No absolute positioning.",
+      q: "Name the 3 biggest default differences from web Flexbox (hint: flexDirection)." },
+
+    { t: "Styling with NativeWind",
+      v: [["UlYjRWbJogw", "How to use TailwindCSS in React Native | Nativewind | Expo"],
+          ["k3CmmU5jm4Q", "NativeWind v5 Setup: Use Tailwind CSS in React Native | 2026 Guide | Part 2"]],
+      d: [["NativeWind docs", "https://www.nativewind.dev/"]],
+      b: "Install NativeWind and restyle Days 1–3 with Tailwind classes. Use the first video if you want the stable setup; the second is the v5 setup (it is Part 2 of a series).",
+      q: "Where did className just work, and where did you fall back to style?" },
+
+    { t: "Lists: FlatList and FlashList",
+      v: [["514Gds-jLMY", "Creating Performant Lists in Your Expo React Native Apps using Shopify Flash List"],
+          ["1YhCVDNicWA", "Optimizing Large Lists in React Native with List Components"]],
+      d: [["RN docs: FlatList", "https://reactnative.dev/docs/flatlist"],
+          ["FlashList docs", "https://shopify.github.io/flash-list/"]],
+      b: "Render 50+ mock rows with FlatList, then swap in FlashList and compare how scrolling feels.",
+      q: "Why can't you .map() a long array into a ScrollView?" },
+
+    { t: "Mini project: three screens, no router",
+      v: [["J50gwzwLvAk", "React Native Full Course 2025 | Become a React Native Pro in 4 Hours", "PedroTech · optional build-along if you get stuck"]],
+      d: [],
+      b: "Build Home / Detail / Settings and switch between them with plain state. Pick your capstone idea today (habit tracker, notes with photos, small social feed, or a shop with a cart).",
+      q: "What already feels awkward about switching screens by hand?" },
+
+    { t: "Buffer day",
+      v: [], d: [],
+      b: "Finish anything that is behind. If you're caught up, polish the three-screen app.",
+      q: "Which idea from this week do you still not trust yourself on?" },
+
+    { t: "Expo Router: Next.js in your pocket",
+      v: [["Yh6Qlg2CYwQ", "Introduction to Expo Router Layout Files"],
+          ["ZG6GngLP3qo", "Introduction To Expo Router with Stack & Tab Navigator"]],
+      d: [["Expo Router: Introduction", "https://docs.expo.dev/router/introduction/"],
+          ["Expo Router: Core concepts", "https://docs.expo.dev/router/basics/core-concepts/"]],
+      b: "Convert the Day 6 app to file-based routing: app/index.tsx, app/detail.tsx and app/_layout.tsx.",
+      q: "Map layout.tsx and page.tsx from the Next.js App Router to their Expo Router equivalents." },
+
+    { t: "Tabs and stacks",
+      v: [["BElPB4Ai3j0", "Using a Tab Navigator with Expo Router"],
+          ["izZv6a99Roo", "Using a Stack Navigator with Expo Router"],
+          ["4qVLgaRHPaw", "File Based Routing | Expo Router Tutorial", "Code with Beto"]],
+      d: [["Expo Router: Core concepts", "https://docs.expo.dev/router/basics/core-concepts/"]],
+      b: "Add a (tabs) group with Home / Profile / Settings, plus a stack screen pushed on top of the tabs.",
+      q: "What do the parentheses in (tabs) actually do?" },
+
+    { t: "Dynamic routes and params",
+      v: [["FUpvQQzBJmU", "Dynamic File-based Routing in React Native with Expo Router"],
+          ["T8x5Lr5Sd_s", "React Native Navigation with expo-router // Tabs / Stack / useRouter / params / naming conventions"]],
+      d: [["Expo Router: Introduction", "https://docs.expo.dev/router/introduction/"]],
+      b: "Create app/product/[id].tsx, navigate to it with a param and read that param in the screen.",
+      q: "Compare with Next.js [id].tsx: what's identical, what's different (useLocalSearchParams)?" },
+
+    { t: "Forms and the keyboard",
+      v: [["uL4lPYzhNK0", "React Native KeyboardAvoidingView Tutorial"],
+          ["JmThlYvLYhQ", "How to Build a Keyboard-Avoiding View in React Native + Expo"]],
+      d: [["RN docs: TextInput", "https://reactnative.dev/docs/textinput"],
+          ["RN docs: KeyboardAvoidingView", "https://reactnative.dev/docs/keyboardavoidingview"]],
+      b: "Build a login / signup form with validation. Stop the keyboard covering inputs and dismiss it on tap outside. Test on your real phone.",
+      q: "Which keyboard bug bit you today?" },
+
+    { t: "Modals and swipe gestures",
+      v: [["gNzuJVRmyDk", "Using Modals with Expo Router"],
+          ["BRitzE50Dy0", "Swipe to Delete in React Native Expo in 3 Minutes (Using Swipeable)"]],
+      d: [["Expo Router: Modals", "https://docs.expo.dev/router/advanced/modals/"]],
+      b: "Add an \"Add item\" modal route and swipe-to-delete on a list row.",
+      q: "When is a modal route better than a normal pushed screen?" },
+
+    { t: "Mini project: full navigation flow",
+      v: [], d: [],
+      b: "Combine tabs, a dynamic detail screen, a modal and a form in one small app (notes, shop, or your capstone).",
+      q: "What felt exactly like Next.js, and what felt new?" },
+
+    { t: "Buffer day",
+      v: [], d: [],
+      b: "Catch up on any navigation work still open.",
+      q: "Which navigation concept is still fuzzy?" },
+
+    { t: "Fetching data",
+      v: [["bpHq_-bPkGo", "Data Fetching in React Native with TanStack Query (tutorial for beginners)"]],
+      d: [["RN docs: Networking", "https://reactnative.dev/docs/network"]],
+      b: "Fetch from a public REST API into your FlashList with loading and error states. Try TanStack Query for caching.",
+      q: "What's identical to web fetching, and what's different on a device?" },
+
+    { t: "Auth with Supabase",
+      v: [["ZEka9HtOOC8", "Expo Router And Supabase Authentication"],
+          ["EZIrpRVGlfU", "Supabase React Native Auth Tutorial"],
+          ["rIYzLhkG9TA", "React Native Full 8 Hours Course (Expo, Expo Router, Supabase)", "notJust.dev · full build; use YouTube's chapter list and watch only the auth part"]],
+      d: [["Expo: Using Supabase", "https://docs.expo.dev/guides/using-supabase/"]],
+      b: "Create a Supabase project and wire up email / password sign-in. Guard the tabs behind a session.",
+      q: "How does session persistence differ from a browser cookie?" },
+
+    { t: "Storing data on the device",
+      v: [["s_tBTjQzlSg", "Don't Use AsyncStorage! Secure Your React Native App with Expo SecureStore"],
+          ["46nAccLWas0", "React Native Expo Tutorial: Offline Data Storage with AsyncStorage"]],
+      d: [["Expo SecureStore", "https://docs.expo.dev/versions/latest/sdk/securestore/"],
+          ["AsyncStorage docs", "https://react-native-async-storage.github.io/async-storage/docs/install/"]],
+      b: "Keep the auth token in SecureStore and app preferences in AsyncStorage.",
+      q: "When do you pick SecureStore, AsyncStorage, or Zustand persist?" },
+
+    { t: "Global state with Zustand",
+      v: [["U2Hg-MAAz_M", "Zustand – Complete Tutorial for Beginners in React Native"],
+          ["6siYLO4wokE", "Zustand Persist Middleware Tutorial: Save State to Device"]],
+      d: [["Zustand on GitHub", "https://github.com/pmndrs/zustand"]],
+      b: "Replace prop drilling or Context with a Zustand store (cart, session or theme).",
+      q: "Why is Zustand a better default for React Native than Redux?" },
+
+    { t: "Camera roll and permissions",
+      v: [["wLF-2RagaDE", "React Native Expo Image Picker Tutorial 2026"],
+          ["OVuRWEMeLGA", "React Native Tutorial: Image Picker & Sharing with Expo"]],
+      d: [["Expo ImagePicker", "https://docs.expo.dev/versions/latest/sdk/imagepicker/"]],
+      b: "Add a \"change profile photo\" flow with expo-image-picker and a graceful permission request.",
+      q: "Write down your reusable pattern: check, request, handle denial." },
+
+    { t: "Push notifications",
+      v: [["p4KP-hXuDyI", "React Native Expo Push Notifications Tutorial (2025) – iOS & Android Setup"],
+          ["NI_nv5lTGaY", "React Native Local Push Notifications Tutorial (2026)"]],
+      d: [["Expo: Push notifications setup", "https://docs.expo.dev/push-notifications/push-notifications-setup/"]],
+      b: "Schedule a local notification, then register for a push token on a real device.",
+      q: "Why do remote push notifications need a development build instead of Expo Go?" },
+
+    { t: "Buffer and backend wrap-up",
+      v: [], d: [],
+      b: "Finish any backend or device-API work still open.",
+      q: "Which backend concept needs more practice?" },
+
+    { t: "Animation, just enough",
+      v: [["OfKVpG8KLhY", "Building Beautiful Animations with React Native Reanimated 3"],
+          ["rnK_03dyY0o", "React Native Reanimated Basics"],
+          ["eLjzIM_4zlg", "YouTube Transitions – \"Can it be done in React Native?\"", "William Candillon · advanced inspiration, 2019"]],
+      d: [["Reanimated: Getting started", "https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/getting-started/"]],
+      b: "Add one real animation: a fade-in, a press-scale or a basic swipe. Don't go down the rabbit hole.",
+      q: "Why does running on the UI thread matter for smoothness?" },
+
+    { t: "Performance pass",
+      v: [["rSym-q9soFk", "7 Tips to Make Your React Native App Blazing Fast!"],
+          ["M5k3i_CBonU", "Most Developers Get React Native Re-renders Wrong"]],
+      d: [["RN docs: Performance", "https://reactnative.dev/docs/performance"],
+          ["FlashList docs", "https://shopify.github.io/flash-list/"]],
+      b: "Audit the capstone: remove extra re-renders, size images properly and check scrolling on a mid-range phone.",
+      q: "List 3 performance habits you'll now apply by default." },
+
+    { t: "Development builds",
+      v: [["Th8uRHWOv-Q", "React Native Development Build tutorial with EAS"],
+          ["nErlD5GiWvI", "Expo Development Client vs Expo Go"]],
+      d: [["Expo: Development builds", "https://docs.expo.dev/develop/development-builds/introduction/"]],
+      b: "Run eas build --profile development, install it on your phone and use a library Expo Go can't run.",
+      q: "Explain Expo Go vs development build vs production build." },
+
+    { t: "Your first production build",
+      v: [["3RCahcMlsBY", "EAS Build Android Walkthrough"],
+          ["K3-QNKLPGKI", "React Native Expo EAS Builds – Cloud & Local Builds in Android & iOS"]],
+      d: [["EAS Build introduction", "https://docs.expo.dev/build/introduction/"],
+          ["Android production build", "https://docs.expo.dev/tutorial/eas/android-production-build/"]],
+      b: "Run your first production EAS build for Android (iOS too if you have a Mac and an Apple Developer account).",
+      q: "Which app.json fields end up in the store listing?" },
+
+    { t: "Submit to a store",
+      v: [["-KZjr576tuE", "Async Office Hours: How to quickly publish to the App Store & Play Store with EAS Submit"],
+          ["qxO_8GFAliE", "Publish APP To Google PLAY Store: Internal Testing Setup [2026]"]],
+      d: [["Submit to app stores", "https://docs.expo.dev/deploy/submit-to-app-stores/"]],
+      b: "Submit to the Google Play internal testing track ($25 one-time; Apple is $99 a year), or walk through every step without paying.",
+      q: "What do you still need before a public launch? Screenshots, privacy policy, content rating." },
+
+    { t: "Polish day",
+      v: [["77mVhKiBCsE", "[2025] Expo App Icon and Splash Screen Tutorial"],
+          ["MqLteLe-Fow", "Expo Splash Screen & App Icons Setup"]],
+      d: [],
+      b: "Fix bugs, add empty / loading / error states, a real icon and a splash screen.",
+      q: "If you had one more day, what's the first thing you'd fix?" },
+
+    { t: "Over-the-air updates",
+      v: [["DWpcD6bvTRA", "Sending Over-the-Air (OTA) Updates with EAS Update"],
+          ["TsLFMxNNlBg", "What OTA Updates are, how they work, and how to use them"]],
+      d: [["EAS Update introduction", "https://docs.expo.dev/eas-update/introduction/"]],
+      b: "Push a JavaScript-only update to your development build with EAS Update.",
+      q: "What can ship over the air, and what needs a new build?" },
+
+    { t: "Ship day: finish the capstone",
+      v: [], d: [],
+      b: "Finish the capstone app and write a short README.",
+      q: "What are you proudest of from this month?" },
+
+    { t: "Ship day: demo and what's next",
+      v: [], d: [],
+      b: "Record a 60-second demo of the app running on your phone and decide what month two looks like.",
+      q: "What's the first thing on your month-two list?" }
+  ];
+  DAYS.forEach(function (d, i) { d.id = i + 1; });
+  var TOTAL = DAYS.length;
+
+  /* =========================================================
+     STATE (localStorage)
+     ========================================================= */
+  var KEY = "daybreak-rn30-v2";
+  var OLD_KEY = "rn30-tracker-v1";
+  var storageOK = true;
+
+  function blank() { return { v: 2, days: {}, last: 1 }; }
+
+  function load() {
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (raw) { var s = JSON.parse(raw); if (s && s.days) return s; }
+    } catch (e) { storageOK = false; }
+    try {
+      var old = localStorage.getItem(OLD_KEY);
+      if (old) {
+        var o = JSON.parse(old), s2 = blank();
+        Object.keys(o.entries || {}).forEach(function (id) {
+          var e = o.entries[id], dt = e.done ? (e.date || todayKey()) : null;
+          s2.days[id] = { b: { watch: dt, build: dt, review: dt }, note: e.note || "" };
         });
+        return s2;
+      }
+    } catch (e) { /* ignore */ }
+    return blank();
+  }
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(state)); storageOK = true; }
+    catch (e) { storageOK = false; }
+  }
 
-        // Phase list
-        const list = document.getElementById("phase-list");
-        list.innerHTML = "";
-        PHASES.forEach((ph, pi) => {
-          const done = doneInPhase(pi);
-          const total = ph.sessions.length;
-          const item = document.createElement("div");
-          item.className = "ph-item" + (pi === activePhase ? " active" : "");
-          item.style.borderLeftColor =
-            pi === activePhase ? ph.color : "transparent";
-          item.innerHTML = `
-      <div class="ph-dot" style="background:${ph.color}"></div>
-      <div class="ph-info">
-        <div class="ph-name">Phase ${pi + 1} · ${ph.name}</div>
-        <div class="ph-prog">${done}/${total} sessions</div>
-        <div class="ph-mini-bar">
-          <div class="ph-mini-fill" style="background:${ph.color};width:${(done / total) * 100}%"></div>
-        </div>
-      </div>
-    `;
-          item.onclick = () => {
-            activePhase = pi;
-            render();
-            closeSidebar();
-          };
-          list.appendChild(item);
+  var state = load();
+  var cur = 1;
+  var popId = null;
+
+  function dayState(id) {
+    if (!state.days[id]) state.days[id] = { b: { watch: null, build: null, review: null }, note: "" };
+    var s = state.days[id];
+    if (!s.b) s.b = { watch: null, build: null, review: null };
+    return s;
+  }
+  function blocksDone(id) {
+    var b = dayState(id).b, n = 0;
+    BLOCKS.forEach(function (x) { if (b[x.k]) n++; });
+    return n;
+  }
+  function isDone(id) { return blocksDone(id) === 3; }
+  function nextUnfinished() {
+    for (var i = 1; i <= TOTAL; i++) if (!isDone(i)) return i;
+    return null;
+  }
+
+  /* ---------- dates ---------- */
+  function pad(n) { return (n < 10 ? "0" : "") + n; }
+  function keyOf(d) { return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()); }
+  function todayKey() { return keyOf(new Date()); }
+  function dayNum(key) { var p = key.split("-"); return Math.round(Date.UTC(+p[0], +p[1] - 1, +p[2]) / 86400000); }
+
+  /* ---------- stats ---------- */
+  function computeStats() {
+    var done = 0, minutes = 0, dates = {}, counts = {};
+    DAYS.forEach(function (d) {
+      var b = dayState(d.id).b, n = 0;
+      BLOCKS.forEach(function (x) {
+        if (b[x.k]) { n++; minutes += x.min; dates[b[x.k]] = true; counts[b[x.k]] = (counts[b[x.k]] || 0) + 1; }
+      });
+      if (n === 3) done++;
+    });
+
+    var cur = 0, probe = new Date(); probe.setHours(0, 0, 0, 0);
+    if (!dates[keyOf(probe)]) probe.setDate(probe.getDate() - 1);
+    while (dates[keyOf(probe)]) { cur++; probe.setDate(probe.getDate() - 1); }
+
+    var sorted = Object.keys(dates).sort(), best = 0, run = 0, prev = null;
+    sorted.forEach(function (k) {
+      run = (prev !== null && dayNum(k) - prev === 1) ? run + 1 : 1;
+      if (run > best) best = run;
+      prev = dayNum(k);
+    });
+
+    return { done: done, minutes: minutes, streak: cur, best: best, counts: counts };
+  }
+
+  /* =========================================================
+     HELPERS
+     ========================================================= */
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+  function ytUrl(id) { return "https://www.youtube.com/watch?v=" + id; }
+  function ytThumb(id) { return "https://i.ytimg.com/vi/" + id + "/mqdefault.jpg"; }
+  function weekOf(id) { for (var i = 0; i < WEEKS.length; i++) if (id >= WEEKS[i].from && id <= WEEKS[i].to) return WEEKS[i]; return WEEKS[0]; }
+  function lvl(n) { return n === 3 ? 3 : n === 2 ? 2 : n === 1 ? 1 : 0; }
+  function hours(min) { var h = Math.round(min / 6) / 10; return (h % 1 === 0 ? h.toFixed(0) : h.toFixed(1)) + "h"; }
+
+  var ICON = {
+    check: '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2.2 6.4 4.9 9 9.9 3.2" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    play: '<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M4 2.5v9l7.5-4.5z" fill="currentColor"/></svg>',
+    ext: '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M5.5 3H3v8h8V8.5M8 3h3v3M11 3 6.5 7.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    left: '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M10 3 5 8l5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    right: '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m6 3 5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    menu: '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
+    close: '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="m3 3 8 8M11 3l-8 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>'
+  };
+
+  function sunSvg(p) {
+    var o = (0.55 + 0.45 * p).toFixed(2);
+    return '<svg width="38" height="38" viewBox="0 0 38 38" aria-hidden="true">' +
+      '<defs><linearGradient id="sg" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#f26b4f"/><stop offset="1" stop-color="#ffc24b"/></linearGradient>' +
+      '<clipPath id="sc"><rect x="0" y="0" width="38" height="25"/></clipPath></defs>' +
+      '<g opacity="' + o + '"><circle cx="19" cy="25" r="11" fill="url(#sg)" clip-path="url(#sc)"/>' +
+      '<path d="M19 6v4M7.5 11.5l2.8 2.8M30.5 11.5l-2.8 2.8M3 25h4M31 25h4" stroke="#ffc24b" stroke-width="2" stroke-linecap="round"/></g>' +
+      '<path d="M3 29h32" stroke="#a79fd4" stroke-width="2" stroke-linecap="round"/></svg>';
+  }
+
+  /* =========================================================
+     RENDER
+     ========================================================= */
+  var $side = document.getElementById("sideInner");
+  var $sidebar = document.getElementById("sidebar");
+  var $scrim = document.getElementById("scrim");
+  var $top = document.getElementById("topbar");
+  var $day = document.getElementById("dayView");
+  var $act = document.getElementById("activity");
+
+  function renderSidebar(st) {
+    var next = nextUnfinished();
+    var pct = st.done / TOTAL;
+
+    var cells = "";
+    for (var i = 0; i < 35; i++) {
+      var id = i + 1;
+      if (id > TOTAL) { cells += '<span class="pcell pad"></span>'; continue; }
+      var n = blocksDone(id);
+      cells += '<a class="pcell l' + lvl(n) + (id === cur ? " here" : "") + (id === next && id !== cur ? " next" : "") +
+        '" href="#day-' + id + '" title="Day ' + id + ' · ' + esc(DAYS[i].t) + ' — ' + n + '/3 sessions" aria-label="Day ' + id + ', ' + n + ' of 3 sessions done">' + id + '</a>';
+    }
+
+    var cta = next
+      ? '<a class="cta" href="#day-' + next + '"><span>' + (st.done === 0 && blocksDone(1) === 0 ? "Start Day 1" : "Continue with Day " + next) +
+        '<small>' + esc(DAYS[next - 1].t) + '</small></span>' + ICON.right + '</a>'
+      : '<span class="cta" aria-disabled="true"><span>All 30 days complete<small>Nice work.</small></span></span>';
+
+    var list = WEEKS.map(function (w) {
+      var wd = 0, rows = "";
+      for (var id = w.from; id <= w.to; id++) {
+        var done = isDone(id); if (done) wd++;
+        var b = dayState(id).b;
+        rows += '<a class="row' + (id === cur ? " active" : "") + (done ? " complete" : "") + '" href="#day-' + id + '"' + (id === cur ? ' aria-current="page"' : "") + '>' +
+          '<span class="pips">' + BLOCKS.map(function (x) { return '<i class="' + (b[x.k] ? "on" : "") + '"></i>'; }).join("") + '</span>' +
+          '<span class="row-n">' + id + '</span><span class="row-t">' + esc(DAYS[id - 1].t) + '</span></a>';
+      }
+      return '<div class="wk"><strong>Week ' + w.n + '</strong><em>' + esc(w.name) + '</em><span>' + wd + '/' + (w.to - w.from + 1) + '</span></div>' + rows;
+    }).join("");
+
+    $side.innerHTML =
+      '<div class="brand">' + sunSvg(pct) +
+        '<div><div class="brand-name">Daybreak</div><div class="brand-sub">React Native in 30 days</div></div>' +
+        '<button class="drawer-close" id="drawerClose" aria-label="Close menu">' + ICON.close + '</button></div>' +
+      '<div class="overview"><div class="plan-grid" role="navigation" aria-label="30-day map">' + cells + '</div>' +
+        '<div class="stat-col">' +
+          '<div class="stat"><b>' + st.done + '<span style="font-size:.9rem;color:var(--haze)">/' + TOTAL + '</span></b><span>Days done</span></div>' +
+          '<div class="stat"><b>' + st.streak + '</b><span>Day streak</span></div>' +
+          '<div class="stat"><b>' + st.best + '</b><span>Best streak</span></div>' +
+          '<div class="stat"><b>' + hours(st.minutes) + '</b><span>Learned</span></div>' +
+        '</div></div>' +
+      '<div class="legend">Sessions done <i style="background:var(--cell)"></i>0 <i style="background:var(--ember-1)"></i>1 <i style="background:var(--ember-3)"></i>2 <i style="background:var(--gold)"></i>3</div>' +
+      cta + list +
+      '<div class="side-foot"><button class="ghost" data-act="export">Export backup</button><button class="ghost" data-act="import">Import</button><button class="ghost danger" data-act="reset">Reset all</button></div>' +
+      (storageOK ? "" : '<p class="warn">Your browser is blocking localStorage, so progress won\'t be saved after you close this tab.</p>');
+  }
+
+  function renderTopbar(st) {
+    var chips = DAYS.map(function (d) {
+      return '<a class="chip l' + lvl(blocksDone(d.id)) + (d.id === cur ? " here" : "") + '" href="#day-' + d.id + '" aria-label="Day ' + d.id + '">' + d.id + '</a>';
+    }).join("");
+    $top.innerHTML = '<button class="menu-btn" id="menuBtn" aria-label="Open menu">' + ICON.menu + '<span>' + st.done + '/' + TOTAL + '</span></button><div class="chips" id="chips">' + chips + '</div>';
+  }
+
+  function sessionHTML(b, day, ds) {
+    var done = !!ds.b[b.k];
+    var body = "";
+
+    if (b.k === "watch") {
+      if (!day.v.length && !day.d.length) {
+        body = '<p class="empty-note">' + BUFFER_NOTE + '</p>';
+      } else {
+        body = '<div class="stack">';
+        day.v.forEach(function (v) {
+          body += '<a class="vid" href="' + ytUrl(v[0]) + '" target="_blank" rel="noopener noreferrer">' +
+            '<div class="thumb"><img src="' + ytThumb(v[0]) + '" alt="" loading="lazy"><div class="play"><span>' + ICON.play + '</span></div></div>' +
+            '<div><div class="vid-title">' + esc(v[1]) + '</div>' +
+            (v[2] ? '<div class="vid-meta">' + esc(v[2]) + '</div>' : "") +
+            '<div class="vid-url"><span class="host">youtube.com/</span>watch?v=' + esc(v[0]) + '</div></div></a>';
         });
-      }
-
-      // ── Render topbar ─────────────────────────────────────────────────
-      function renderTopbar() {
-        const ph = PHASES[activePhase];
-        document.getElementById("tb-title").textContent =
-          "Phase " + (activePhase + 1) + " · " + ph.name;
-        document.getElementById("tb-desc").textContent = ph.desc;
-        const done = doneInPhase(activePhase);
-        const total = ph.sessions.length;
-        document.getElementById("tb-stat-sess").innerHTML =
-          "<strong>" + done + "</strong> / " + total + " done";
-        document.getElementById("tb-stat-time").innerHTML =
-          "<strong>" + total * 2 + "h</strong> total";
-      }
-
-      // ── Render sessions ───────────────────────────────────────────────
-      function renderSessions() {
-        const grid = document.getElementById("sessions-grid");
-        grid.innerHTML = "";
-        const pc = phaseColor(activePhase);
-
-        PHASES[activePhase].sessions.forEach((gi) => {
-          const s = SESSIONS[gi];
-          const isDone = completed.has(gi);
-          const card = document.createElement("div");
-          card.className = "sess-card" + (isDone ? " done" : "");
-          card.id = "card-" + gi;
-
-          const badgeMap = {
-            "b-mobile": "mobile",
-            "b-map": "maps",
-            "b-build": "build",
-          };
-          const resIcons = { yt: "▶", doc: "📄", code: "⌨" };
-          const resCls = { yt: "r-yt", doc: "r-doc", code: "r-code" };
-
-          card.innerHTML = `
-      <div class="sess-hdr">
-        <div class="sess-num" style="background:${pc}">${gi + 1}</div>
-        <div class="sess-meta">
-          <h3>${s.title}</h3>
-          <p>${s.sub}</p>
-        </div>
-        <div class="sess-badges">
-          ${isDone ? '<span class="badge b-done">✓ done</span>' : ""}
-          <span class="badge ${s.badge}">${badgeMap[s.badge] || ""}</span>
-        </div>
-        <div class="chevron">▾</div>
-      </div>
-      <div class="sess-body">
-        <div class="body-grid">
-          <div class="body-col">
-            <div class="sec-label">concepts</div>
-            <div class="tags">${s.tags.map((t) => '<span class="tag">' + t + "</span>").join("")}</div>
-
-            <div class="sec-label" style="margin-top:14px">from your React / Next.js knowledge</div>
-            <div class="bridge">${s.bridge}</div>
-          </div>
-          <div class="body-col">
-            <div class="sec-label">resources</div>
-            <div class="res-list">
-              ${s.resources
-                .map(
-                  (r) => `
-                <div class="res-item">
-                  <div class="res-icon ${resCls[r.t]}">${resIcons[r.t]}</div>
-                  <div class="res-text">
-                    <a href="${r.url}" target="_blank" rel="noopener">${r.label}</a>
-                    <p>${r.note}</p>
-                  </div>
-                </div>
-              `,
-                )
-                .join("")}
-            </div>
-
-            <div class="sec-label" style="margin-top:14px">15-min review</div>
-            <div class="review-box"><p>${s.review}</p></div>
-
-            <div class="done-row">
-              <button class="done-btn ${isDone ? "is-done" : ""}" data-idx="${gi}">
-                ${isDone ? "✓ completed" : "mark complete"}
-              </button>
-              <span class="done-note">Session ${gi + 1} · 2h study + 15min review</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
-
-          // Toggle open
-          card.querySelector(".sess-hdr").addEventListener("click", () => {
-            card.classList.toggle("open");
-          });
-
-          // Complete btn
-          card.querySelector(".done-btn").addEventListener("click", (e) => {
-            e.stopPropagation();
-            const idx = parseInt(e.currentTarget.dataset.idx);
-            if (completed.has(idx)) {
-              completed.delete(idx);
-            } else {
-              completed.add(idx);
-            }
-            save();
-            render();
-            // Reopen card
-            const c = document.getElementById("card-" + idx);
-            if (c) c.classList.add("open");
-          });
-
-          grid.appendChild(card);
+        day.d.forEach(function (d) {
+          body += '<a class="doc" href="' + esc(d[1]) + '" target="_blank" rel="noopener noreferrer">' + ICON.ext + '<span>' + esc(d[0]) + '</span><span class="dm">docs</span></a>';
         });
-
-        // Scroll to top on phase change
-        document.getElementById("sessions-wrap").scrollTop = 0;
+        body += '</div>';
       }
+    } else if (b.k === "build") {
+      body = '<p class="s-text">' + esc(day.b) + '</p>';
+    } else {
+      body = '<ol class="qs"><li>' + esc(day.q) + '</li>' +
+        '<li>What\'s the closest web or Next.js equivalent, and where does the analogy break?</li>' +
+        '<li>Commit your work. Write down what\'s still fuzzy, but don\'t fix it now.</li></ol>' +
+        '<label class="sr" for="note">Your notes for Day ' + day.id + '</label>' +
+        '<textarea class="note" id="note" placeholder="Notes for future you (optional). Saved on this device.">' + esc(ds.note) + '</textarea>';
+    }
 
-      function render() {
-        renderSidebar();
-        renderTopbar();
-        renderSessions();
-      }
+    return '<section class="session ' + b.k + (done ? " done" : "") + '">' +
+      '<div class="s-head"><span class="s-kind">' + b.label + '</span><span class="s-time">' + b.min + ' min</span><span class="spacer"></span>' +
+      '<button class="toggle" data-toggle="' + b.k + '" aria-pressed="' + done + '"><span class="box">' + ICON.check + '</span>' +
+      '<span>' + (done ? "Done" : "Mark done") + '</span><kbd>' + b.key + '</kbd></button></div>' + body + '</section>';
+  }
 
-      // ── Mobile sidebar toggle ─────────────────────────────────────────
-      function toggleSidebar() {
-        document.getElementById("sidebar").classList.toggle("mob-open");
-      }
-      function closeSidebar() {
-        if (window.innerWidth <= 700)
-          document.getElementById("sidebar").classList.remove("mob-open");
-      }
+  function renderDay() {
+    var day = DAYS[cur - 1], ds = dayState(cur), n = blocksDone(cur), full = n === 3;
+    var wk = weekOf(cur);
+    var prev = cur > 1 ? DAYS[cur - 2] : null, nxt = cur < TOTAL ? DAYS[cur] : null;
+    var upNext = nextUnfinished();
 
-      // ── Init ──────────────────────────────────────────────────────────
-      render();
-    </script>
-  </body>
+    var banner = '<div class="banner' + (full ? " show" : "") + '"><span>Day ' + cur + ' complete.</span><span class="sp"></span>' +
+      (upNext ? '<a href="#day-' + upNext + '">Next up: Day ' + upNext + '</a>' : '<span>That\'s all 30 days.</span>') + '</div>';
+
+    $day.innerHTML =
+      '<div class="crumbs"><span>Week ' + wk.n + ' · ' + esc(wk.name) + '</span><span class="sp"></span>' +
+        '<a class="navbtn" href="#day-' + (cur - 1) + '" aria-label="Previous day"' + (prev ? "" : ' aria-disabled="true" tabindex="-1"') + '>' + ICON.left + '</a>' +
+        '<a class="navbtn" href="#day-' + (cur + 1) + '" aria-label="Next day"' + (nxt ? "" : ' aria-disabled="true" tabindex="-1"') + '>' + ICON.right + '</a></div>' +
+      '<div class="hero"><div class="numeral' + (full ? " full" : "") + (popId === cur ? " pop" : "") + '" style="--fill:' + Math.round(n / 3 * 100) + '%" aria-hidden="true">' + cur + '</div>' +
+        '<div><h1><span class="sr">Day ' + cur + ': </span>' + esc(day.t) + '</h1><p>2 hours · 45 watch &nbsp;+&nbsp; 60 build &nbsp;+&nbsp; 15 review</p></div></div>' +
+      '<div class="segbar" aria-hidden="true">' + BLOCKS.map(function (x) { return '<i class="' + (ds.b[x.k] ? "on" : "") + '"></i>'; }).join("") + '</div>' +
+      '<div class="timeline">' + BLOCKS.map(function (b) { return sessionHTML(b, day, ds); }).join("") + '</div>' +
+      banner +
+      '<div class="pager">' +
+        (prev ? '<a class="pg" href="#day-' + prev.id + '"><small>← Day ' + prev.id + '</small><b>' + esc(prev.t) + '</b></a>' : '<span class="pg" aria-disabled="true"></span>') +
+        (nxt ? '<a class="pg next-pg" href="#day-' + nxt.id + '"><small>Day ' + nxt.id + ' →</small><b>' + esc(nxt.t) + '</b></a>' : '<span class="pg" aria-disabled="true"></span>') +
+      '</div>' +
+      '<p class="hint"><kbd>←</kbd><kbd>→</kbd> switch day &nbsp; <kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> toggle sessions &nbsp; <kbd>N</kbd> next unfinished</p>';
+  }
+
+  function renderActivity(st) {
+    var WEEKS_N = 30;
+    var today = new Date(); today.setHours(0, 0, 0, 0);
+    var end = new Date(today); end.setDate(end.getDate() + (6 - end.getDay()));
+    var start = new Date(end); start.setDate(start.getDate() - (WEEKS_N * 7 - 1));
+    var tk = keyOf(today), cells = "", names = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+    var labels = [], c = new Date(start), prevM = -1;
+    for (var w0 = 0; w0 < WEEKS_N; w0++) {
+      var m0 = c.getMonth();
+      labels.push(m0 !== prevM ? names[m0] : "");
+      prevM = m0;
+      c.setDate(c.getDate() + 7);
+    }
+    // Drop a first-column label that would collide with the next month's label
+    if (labels[0]) { for (var j = 1; j < 3; j++) if (labels[j]) { labels[0] = ""; break; } }
+    var months = labels.map(function (l) { return "<span>" + l + "</span>"; }).join("");
+
+    c = new Date(start);
+    for (var w = 0; w < WEEKS_N; w++) {
+      for (var d = 0; d < 7; d++) {
+        var k = keyOf(c), n = st.counts[k] || 0;
+        if (c > today) cells += '<div class="hc fut"></div>';
+        else cells += '<div class="hc' + (n ? " h" + Math.min(n, 4) : "") + (k === tk ? " today" : "") + '" title="' + k + ' · ' + n + (n === 1 ? " session" : " sessions") + '"></div>';
+        c.setDate(c.getDate() + 1);
+      }
+    }
+    $act.innerHTML = '<section class="activity"><h2>Activity</h2><p>Every session you tick lights up the day you did it. Darker means more sessions that day.</p>' +
+      '<div class="heat-scroll"><div class="heat"><div class="heat-days"><span></span><span>Mon</span><span></span><span>Wed</span><span></span><span>Fri</span><span></span></div>' +
+      '<div><div class="heat-months">' + months + '</div><div class="heat-cells">' + cells + '</div></div></div></div>' +
+      '<div class="heat-legend">Less <span class="hc"></span><span class="hc h1"></span><span class="hc h2"></span><span class="hc h3"></span><span class="hc h4"></span> More</div></section>';
+    var sc = $act.querySelector(".heat-scroll");
+    if (sc) sc.scrollLeft = sc.scrollWidth; // show the most recent weeks first on narrow screens
+  }
+
+  function render() {
+    var ae = document.activeElement, tog = ae && ae.getAttribute ? ae.getAttribute("data-toggle") : null;
+    var st = computeStats();
+    var p = st.done / TOTAL;
+    document.documentElement.style.setProperty("--glow", (0.12 + 0.3 * p).toFixed(3));
+    document.title = "Day " + cur + " · Daybreak";
+    renderSidebar(st);
+    renderTopbar(st);
+    renderDay();
+    renderActivity(st);
+    if (tog) { var el = document.querySelector('[data-toggle="' + tog + '"]'); if (el) el.focus({ preventScroll: true }); }
+    popId = null;
+  }
+
+  /* =========================================================
+     NAVIGATION
+     ========================================================= */
+  function clamp(n) { return Math.max(1, Math.min(TOTAL, n)); }
+
+  function parseHash() {
+    var m = /^#day-(\d+)$/.exec(location.hash);
+    return m ? clamp(parseInt(m[1], 10)) : null;
+  }
+
+  // Switch days directly. The URL hash is a nice-to-have (deep links, back button);
+  // sandboxed previews (e.g. inside Claude) forbid history changes, so it must never be required.
+  function go(id) {
+    id = clamp(id);
+    if (id === cur) { closeDrawer(); window.scrollTo(0, 0); return; }
+    try { history.pushState(null, "", "#day-" + id); } catch (e) { /* no URL updates in sandboxed previews */ }
+    show(id);
+  }
+
+  function sync() {
+    var id = parseHash();
+    if (id && id !== cur) show(id);
+  }
+
+  function show(id) {
+    cur = id;
+    state.last = id;
+    save();
+    render();
+    closeDrawer();
+    window.scrollTo(0, 0);
+    var row = $side.querySelector(".row.active");
+    if (row) row.scrollIntoView({ block: "nearest" });
+    var chip = document.querySelector(".chip.here");
+    if (chip && chip.scrollIntoView) chip.scrollIntoView({ inline: "center", block: "nearest" });
+  }
+
+  function openDrawer() { $sidebar.classList.add("open"); $scrim.classList.add("show"); }
+  function closeDrawer() { $sidebar.classList.remove("open"); $scrim.classList.remove("show"); }
+
+  window.addEventListener("hashchange", sync);
+  window.addEventListener("popstate", sync);
+
+  /* =========================================================
+     ACTIONS
+     ========================================================= */
+  function toggle(k) {
+    var ds = dayState(cur), was = isDone(cur);
+    ds.b[k] = ds.b[k] ? null : todayKey();
+    save();
+    popId = (!was && isDone(cur)) ? cur : null;
+    render();
+  }
+
+  document.addEventListener("click", function (e) {
+    // Day links: handle in JS so they work even where fragment navigation is blocked or rewritten.
+    var nav = e.target.closest('a[href^="#day-"]');
+    if (nav) {
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return; // let "open in new tab" work
+      e.preventDefault();
+      go(parseInt(nav.getAttribute("href").slice(5), 10));
+      return;
+    }
+
+    var t = e.target.closest("[data-toggle]");
+    if (t) { toggle(t.getAttribute("data-toggle")); return; }
+
+    if (e.target.closest("#menuBtn")) { openDrawer(); return; }
+    if (e.target.closest("#drawerClose") || e.target === $scrim) { closeDrawer(); return; }
+
+    var a = e.target.closest("[data-act]");
+    if (!a) return;
+    var act = a.getAttribute("data-act");
+    if (act === "export") {
+      var blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+      var link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "daybreak-progress-" + todayKey() + ".json";
+      document.body.appendChild(link); link.click(); link.remove();
+      setTimeout(function () { URL.revokeObjectURL(link.href); }, 2000);
+    } else if (act === "import") {
+      document.getElementById("importFile").click();
+    } else if (act === "reset") {
+      if (confirm("Reset all progress and notes? This can't be undone. Tip: use Export backup first.")) {
+        state = blank(); save(); render();
+      }
+    }
+  });
+
+  document.getElementById("importFile").addEventListener("change", function (e) {
+    var f = e.target.files && e.target.files[0];
+    if (!f) return;
+    var r = new FileReader();
+    r.onload = function () {
+      try {
+        var obj = JSON.parse(r.result);
+        if (!obj || typeof obj.days !== "object") throw new Error("bad file");
+        state = obj; save(); render();
+      } catch (err) { alert("That file isn't a Daybreak backup, so nothing was changed."); }
+    };
+    r.readAsText(f);
+    e.target.value = "";
+  });
+
+  document.addEventListener("input", function (e) {
+    if (e.target && e.target.id === "note") { dayState(cur).note = e.target.value; save(); }
+  });
+
+  // Thumbnails that fail to load fall back to the gradient tile.
+  document.addEventListener("error", function (e) {
+    var img = e.target;
+    if (img && img.tagName === "IMG" && img.closest(".thumb")) img.closest(".thumb").classList.add("broken");
+  }, true);
+
+  document.addEventListener("keydown", function (e) {
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    var t = e.target;
+    if (t && (t.tagName === "TEXTAREA" || t.tagName === "INPUT" || t.isContentEditable)) return;
+    var k = e.key;
+    if (k === "ArrowLeft") { go(cur - 1); e.preventDefault(); }
+    else if (k === "ArrowRight") { go(cur + 1); e.preventDefault(); }
+    else if (k === "1" || k === "2" || k === "3") { toggle(BLOCKS[+k - 1].k); }
+    else if (k === "n" || k === "N") { var nx = nextUnfinished(); if (nx) go(nx); }
+    else if (k === "Escape") { closeDrawer(); }
+  });
+
+  /* =========================================================
+     BOOT
+     ========================================================= */
+  (function boot() {
+    var fromHash = parseHash();
+    var start = fromHash || nextUnfinished() || clamp(state.last || 1);
+    if (!fromHash) { try { history.replaceState(null, "", "#day-" + start); } catch (e) { /* sandboxed preview */ } }
+    show(start);
+  })();
+})();
+</script>
+</body>
 </html>
