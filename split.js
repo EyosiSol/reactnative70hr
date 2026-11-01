@@ -57,3 +57,4 @@ const newIndexHtml = beforeStyle + '\n  <link rel="stylesheet" href="style.css">
 fs.writeFileSync(indexPath, newIndexHtml, 'utf8');
 
 console.log('Successfully split index.html into index.html, style.css, and script.js');
+
